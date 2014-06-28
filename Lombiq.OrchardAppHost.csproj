@@ -59,6 +59,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration\AppHostRegistrations.cs" />
     <Compile Include="Configuration\AppHostSettings.cs" />
     <Compile Include="IOrchardAppHost.cs" />
     <Compile Include="OrchardAppHostExtensions.cs" />

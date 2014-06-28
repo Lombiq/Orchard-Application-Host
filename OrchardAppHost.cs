@@ -33,25 +33,25 @@ namespace Lombiq.OrchardAppHost
     public class OrchardAppHost : IOrchardAppHost
     {
         private readonly AppHostSettings _settings;
-        private readonly Action<ContainerBuilder> _appRegistrations;
-        private readonly Action<ContainerBuilder> _shellRegistrations;
+        private readonly AppHostRegistrations _registrations;
         private IContainer _hostContainer = null;
 
 
         // Having an overload without "registrations" enables calling it without the caller having a reference to Autofac.
         public OrchardAppHost(AppHostSettings settings)
-            : this(settings, null, null)
+            : this(settings, new AppHostRegistrations())
         {
-            _settings = settings;
         }
 
         public OrchardAppHost(
             AppHostSettings settings,
-            Action<ContainerBuilder> appRegistrations,
-            Action<ContainerBuilder> shellRegistrations)
+            AppHostRegistrations registrations)
         {
-            _appRegistrations = appRegistrations;
-            _shellRegistrations = shellRegistrations;
+            if (settings == null) settings = new AppHostSettings();
+            if (registrations == null) registrations = new AppHostRegistrations();
+
+            _settings = settings;
+            _registrations = registrations;
         }
 
 
@@ -178,9 +178,9 @@ namespace Lombiq.OrchardAppHost
                             shellBuilder.RegisterModule<ShellDescriptorManagerModule>();
                         }
 
-                        if (_shellRegistrations != null)
+                        if (_registrations.ShellRegistrations != null)
                         {
-                            _shellRegistrations(shellBuilder);
+                            _registrations.ShellRegistrations(shellBuilder);
                         }
                     }
                 };
@@ -225,9 +225,9 @@ namespace Lombiq.OrchardAppHost
 
                 builder.RegisterType<OrchardLog4netFactory>().As<Castle.Core.Logging.ILoggerFactory>().InstancePerLifetimeScope();
 
-                if (_appRegistrations != null)
+                if (_registrations.AppRegistrations != null)
                 {
-                    _appRegistrations(builder);
+                    _registrations.AppRegistrations(builder);
                 }
             });
         }
