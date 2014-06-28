@@ -60,11 +60,11 @@ namespace Lombiq.OrchardAppHost
             //var clientBuildManager = new ClientBuildManager("/", @"E:\Projects\Munka\Lombiq\Orchard Dev Hg\src\Orchard.Web");
             //clientBuildManager.CompileApplicationDependencies();
 
-            if (_settings.ImportedExtensionAssemblies == null)
+            if (_settings.ImportedExtensions == null)
             {
-                _settings.ImportedExtensionAssemblies = Enumerable.Empty<Assembly>();
+                _settings.ImportedExtensions = Enumerable.Empty<Assembly>();
             }
-            _settings.ImportedExtensionAssemblies = _settings.ImportedExtensionAssemblies.Union(new[] { this.GetType().Assembly });
+            _settings.ImportedExtensions = _settings.ImportedExtensions.Union(new[] { this.GetType().Assembly });
 
             _hostContainer = CreateHostContainer();
             _hostContainer.Resolve<IOrchardHost>().Initialize();
@@ -135,7 +135,7 @@ namespace Lombiq.OrchardAppHost
                 RegisterVolatileProvider<AppHostVirtualPathProvider, IVirtualPathProvider>(builder);
                 RegisterVolatileProvider<AppHostWebSiteFolder, IWebSiteFolder>(builder);
 
-                var assembliesImported = _settings.ImportedExtensionAssemblies != null && _settings.ImportedExtensionAssemblies.Any();
+                var assembliesImported = _settings.ImportedExtensions != null && _settings.ImportedExtensions.Any();
 
                 var shellRegistrations = new ShellContainerRegistrations
                 {
@@ -184,7 +184,7 @@ namespace Lombiq.OrchardAppHost
                 if (assembliesImported)
                 {
                     builder.RegisterType<ImportedAssembliesAccessor>().As<IImportedAssembliesAccessor>().SingleInstance()
-                        .WithParameter(new NamedParameter("assemblies", _settings.ImportedExtensionAssemblies));
+                        .WithParameter(new NamedParameter("assemblies", _settings.ImportedExtensions));
 
                     builder.RegisterType<ImportedAssembliesExtensionProvider>().As<IExtensionFolders>().As<IExtensionLoader>().SingleInstance();
                 }
