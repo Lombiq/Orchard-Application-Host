@@ -103,6 +103,7 @@ namespace Lombiq.OrchardAppHost
             if (_hostContainer != null)
             {
                 _hostContainer.Dispose();
+                _hostContainer = null;
             }
         }
 
@@ -110,11 +111,16 @@ namespace Lombiq.OrchardAppHost
         {
             return OrchardStarter.CreateHostContainer(builder =>
             {
-                builder.Register(c =>
+                builder.Register(context =>
                 {
-                    var context = c.Resolve<IComponentContext>();
-                    var hostEnvironment = new AppHostEnvironment(c.Resolve<IVirtualPathProvider>());
-                    hostEnvironment.AppDomainRestartRequested += Startup;
+                    var hostEnvironment = new AppHostEnvironment(context.Resolve<IVirtualPathProvider>());
+                    hostEnvironment.AppDomainRestartRequested += () =>
+                        {
+                            // Is anything needed here?
+                            //AppDomain.Unload(AppDomain.CurrentDomain)
+                            //throw new ApplicationException();
+                            //Startup();
+                        };
                     return hostEnvironment;
                 }).As<IHostEnvironment>().SingleInstance();
                 var appDataRootRegistration = builder.RegisterType<AppHostAppDataFolderRoot>().As<IAppDataFolderRoot>().SingleInstance();
