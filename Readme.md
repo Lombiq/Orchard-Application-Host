@@ -12,3 +12,4 @@ The Orchard Application Host is an framework that lets you run your application 
 - Orchard-style events
 - Shapes
 - Caching
+- Localization

@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Orchard;
-using Orchard.Logging;
 
-namespace Lombiq.OrchardAppHost.Services
+namespace Orchard.Logging
 {
     /// <summary>
     /// Provides logging services.

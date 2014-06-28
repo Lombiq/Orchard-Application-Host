@@ -70,7 +70,7 @@ namespace Lombiq.OrchardAppHost
             _hostContainer.Resolve<IOrchardHost>().Initialize();
         }
 
-        public void Run(string shellName, Action<IWorkContextScope> kernel)
+        public void Run(Action<IWorkContextScope> process, string shellName)
         {
             var shellContext = _hostContainer.Resolve<IOrchardHost>().GetShellContext(new ShellSettings { Name = shellName });
             using (var scope = shellContext.LifetimeScope.BeginLifetimeScope())
@@ -78,19 +78,16 @@ namespace Lombiq.OrchardAppHost
                 var httpContext = scope.Resolve<IHttpContextAccessor>().Current();
                 using (var workContext = scope.Resolve<IWorkContextAccessor>().CreateWorkContextScope(httpContext))
                 {
-                    var transactionManager = workContext.Resolve<ITransactionManager>();
-                    transactionManager.Demand();
                     try
                     {
-                        kernel(workContext);
+                        process(workContext);
                     }
                     catch (Exception ex)
                     {
-                        transactionManager.Cancel();
-
                         if (ex.IsFatal()) throw;
 
-                        scope.Resolve<ILogger>().Error(ex, "Error when executing work.");
+                        scope.Resolve<ILoggerService>().Error(ex, "Error when executing work inside Orchard App Host.");
+                        throw;
                     }
                 }
 

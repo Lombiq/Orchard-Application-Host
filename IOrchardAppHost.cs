@@ -8,18 +8,21 @@ using Orchard.Environment.Configuration;
 
 namespace Lombiq.OrchardAppHost
 {
+    /// <summary>
+    /// Describes a service for running an Orchard Application Host.
+    /// </summary>
     public interface IOrchardAppHost : IDisposable
     {
+        /// <summary>
+        /// Initilizes the Orchard Application Host. This method should be called before the Host can be used.
+        /// </summary>
         void Startup();
-        void Run(string shellName, Action<IWorkContextScope> kernel);
-    }
 
-
-    public static class OrchardAppHostExtensions
-    {
-        public static void Run(this IOrchardAppHost appHost, Action<IWorkContextScope> kernel)
-        {
-            appHost.Run(ShellSettings.DefaultName, kernel);
-        }
+        /// <summary>
+        /// Runs a process inside the Orchard Application Host.
+        /// </summary>
+        /// <param name="process">The process to run inside the Orchard Application Host.</param>
+        /// <param name="shellName">Name of the Orchard shell to run the process in.</param>
+        void Run(Action<IWorkContextScope> process, string shellName);
     }
 }
