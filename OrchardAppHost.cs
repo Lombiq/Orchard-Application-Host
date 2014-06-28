@@ -26,6 +26,7 @@ using Orchard.Environment.Extensions.Loaders;
 using System.Reflection;
 using System.Web.Routing;
 using System.Web.Mvc;
+using Orchard.FileSystems.Dependencies;
 
 namespace Lombiq.OrchardAppHost
 {
@@ -65,6 +66,31 @@ namespace Lombiq.OrchardAppHost
                 _settings.ImportedExtensions = Enumerable.Empty<Assembly>();
             }
             _settings.ImportedExtensions = _settings.ImportedExtensions.Union(new[] { this.GetType().Assembly });
+
+            // Trying to load not found assemblies from the Dependencies folder. This is instead of the assemblyBinding config
+            // in Orchard's Web.config.
+            AppDomain.CurrentDomain.AssemblyResolve += (object sender, ResolveEventArgs args) =>
+            {
+                // Splitting the name as sometimes it's the full assembly name (e.g. "Orchard.Tokens, Version=1.8.0.0...".
+                var assemblyName = args.Name.Split(',')[0];
+                var dependenciesFolder = _hostContainer.Resolve<IDependenciesFolder>();
+                var path = string.Empty;
+
+                var dependency = dependenciesFolder.GetDescriptor(assemblyName);
+                if (dependency != null) path = dependency.VirtualPath;
+                else if (args.RequestingAssembly != null)
+                {
+                    dependency = dependenciesFolder.GetDescriptor(args.RequestingAssembly.FullName.Split(',')[0]);
+                    if (dependency != null)
+                    {
+                        var reference = dependency.References.SingleOrDefault(r => r.Name == assemblyName);
+                        if (reference != null) path = reference.VirtualPath;
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(path)) return Assembly.LoadFile(path);
+                return null;
+            };
 
             _hostContainer = CreateHostContainer();
             _hostContainer.Resolve<IOrchardHost>().Initialize();
