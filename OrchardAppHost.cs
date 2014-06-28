@@ -60,11 +60,11 @@ namespace Lombiq.OrchardAppHost
             //var clientBuildManager = new ClientBuildManager("/", @"E:\Projects\Munka\Lombiq\Orchard Dev Hg\src\Orchard.Web");
             //clientBuildManager.CompileApplicationDependencies();
 
-            if (_settings.ImportedAssemblies == null)
+            if (_settings.ImportedExtensionAssemblies == null)
             {
-                _settings.ImportedAssemblies = Enumerable.Empty<Assembly>();
+                _settings.ImportedExtensionAssemblies = Enumerable.Empty<Assembly>();
             }
-            //_settings.ImportedAssemblies = _settings.ImportedAssemblies.Union(new[] { this.GetType().Assembly });
+            _settings.ImportedExtensionAssemblies = _settings.ImportedExtensionAssemblies.Union(new[] { this.GetType().Assembly });
 
             _hostContainer = CreateHostContainer();
             _hostContainer.Resolve<IOrchardHost>().Initialize();
@@ -122,16 +122,22 @@ namespace Lombiq.OrchardAppHost
                 RegisterVolatileProvider<AppHostVirtualPathProvider, IVirtualPathProvider>(builder);
                 RegisterVolatileProvider<AppHostWebSiteFolder, IWebSiteFolder>(builder);
 
+                var assembliesImported = _settings.ImportedExtensionAssemblies != null && _settings.ImportedExtensionAssemblies.Any();
 
                 var shellRegistrations = new ShellContainerRegistrations
                 {
                     Registrations = shellBuilder =>
                     {
+                        // Despite imported assemblies being handled these registrations are necessary, because they are needed too early.
                         shellBuilder.RegisterType<AppHostAppDataFolderRoot>().As<IAppDataFolderRoot>().InstancePerMatchingLifetimeScope("shell");
-
                         RegisterVolatileProvider<AppHostVirtualPathMonitor, IVirtualPathMonitor>(shellBuilder);
                         RegisterVolatileProvider<AppHostVirtualPathProvider, IVirtualPathProvider>(shellBuilder);
                         RegisterVolatileProvider<AppHostWebSiteFolder, IWebSiteFolder>(shellBuilder);
+
+                        if (assembliesImported)
+                        {
+                            shellBuilder.RegisterModule<ShellDescriptorManagerModule>();
+                        }
 
                         if (_shellRegistrations != null)
                         {
@@ -160,10 +166,14 @@ namespace Lombiq.OrchardAppHost
                     builder.RegisterType<ThemeFolders>().As<IExtensionFolders>().SingleInstance()
                         .WithParameter(new NamedParameter("paths", _settings.ThemeFolderPaths));
                 }
-                if (_settings.ImportedAssemblies != null && _settings.ImportedAssemblies.Any())
+
+                // Handling imported assemblies.
+                if (assembliesImported)
                 {
-                    builder.RegisterType<ImportedAssembliesExtensionProvider>().As<IExtensionFolders>().As<IExtensionLoader>().SingleInstance()
-                        .WithParameter(new NamedParameter("assemblies", _settings.ImportedAssemblies));
+                    builder.RegisterType<ImportedAssembliesAccessor>().As<IImportedAssembliesAccessor>().SingleInstance()
+                        .WithParameter(new NamedParameter("assemblies", _settings.ImportedExtensionAssemblies));
+
+                    builder.RegisterType<ImportedAssembliesExtensionProvider>().As<IExtensionFolders>().As<IExtensionLoader>().SingleInstance();
                 }
 
                 builder.RegisterType<AppHostCoreExtensionLoader>().As<IExtensionLoader>().SingleInstance();

@@ -12,6 +12,6 @@ namespace Lombiq.OrchardAppHost.Configuration
         public IEnumerable<string> ModuleFolderPaths { get; set; }
         public IEnumerable<string> CoreModuleFolderPaths { get; set; }
         public IEnumerable<string> ThemeFolderPaths { get; set; }
-        public IEnumerable<Assembly> ImportedAssemblies { get; set; }
+        public IEnumerable<Assembly> ImportedExtensionAssemblies { get; set; }
     }
 }
