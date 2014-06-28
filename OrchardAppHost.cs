@@ -91,10 +91,12 @@ namespace Lombiq.OrchardAppHost
                     }
                 }
 
-                // Either this or calling IOrchardHost.EndRequest()?
-                var processingEngine = scope.Resolve<IProcessingEngine>();
-                while (processingEngine.AreTasksPending())
-                    processingEngine.ExecuteNextTask();
+                // Either this or running tasks through IProcessingEngine as below. EndRequest() also restarts updated shells but
+                // can have unwanted sideeffects in the future.
+                _hostContainer.Resolve<IOrchardHost>().EndRequest();
+                //var processingEngine = scope.Resolve<IProcessingEngine>();
+                //while (processingEngine.AreTasksPending())
+                //    processingEngine.ExecuteNextTask();
             }
         }
 
