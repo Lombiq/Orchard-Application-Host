@@ -166,6 +166,9 @@ namespace Lombiq.OrchardAppHost
                         .WithParameter(new NamedParameter("assemblies", _settings.ImportedAssemblies));
                 }
 
+                builder.RegisterType<AppHostCoreExtensionLoader>().As<IExtensionLoader>().SingleInstance();
+                builder.RegisterType<AppHostRawThemeExtensionLoader>().As<IExtensionLoader>().SingleInstance();
+
                 // Either we register MVC singletons or we need at least a new IOrchardShell implementation.
                 builder.Register(ctx => RouteTable.Routes).SingleInstance();
                 builder.Register(ctx => ModelBinders.Binders).SingleInstance();

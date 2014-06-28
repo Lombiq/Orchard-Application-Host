@@ -67,9 +67,11 @@
     <Compile Include="OrchardAppHost.cs" />
     <Compile Include="Services\AppHostAppDataFolderRoot.cs" />
     <Compile Include="Services\AppHostHttpContextAccessor.cs" />
+    <Compile Include="Services\AppHostRawThemeExtensionLoader.cs" />
     <Compile Include="Services\AppHostVirtualPathMonitor.cs" />
     <Compile Include="Services\AppHostVirtualPathProvider.cs" />
     <Compile Include="Services\AppHostWebSiteFolder.cs" />
+    <Compile Include="Services\AppHostCoreExtensionLoader.cs" />
     <Compile Include="Services\ImportedAssembliesExtensionProvider.cs" />
   </ItemGroup>
   <ItemGroup>
