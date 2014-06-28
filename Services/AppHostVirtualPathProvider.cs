@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Lombiq.OrchardAppHost.Helpers;
 using Orchard.FileSystems.VirtualPath;
 
 namespace Lombiq.OrchardAppHost.Services
@@ -13,7 +12,15 @@ namespace Lombiq.OrchardAppHost.Services
     {
         public override string MapPath(string virtualPath)
         {
-            return PathHelpers.MapPath(virtualPath);
+            if (virtualPath.StartsWith("~"))
+            {
+                virtualPath = virtualPath.Substring(1);
+            }
+            if (virtualPath.StartsWith("/"))
+            {
+                virtualPath = virtualPath.Substring(1);
+            }
+            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, virtualPath);
         }
 
         public override bool FileExists(string virtualPath)

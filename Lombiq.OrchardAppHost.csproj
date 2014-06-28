@@ -60,7 +60,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AppHostSettings.cs" />
-    <Compile Include="Helpers\PathHelpers.cs" />
     <Compile Include="IOrchardAppHost.cs" />
     <Compile Include="OrchardAppHostExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

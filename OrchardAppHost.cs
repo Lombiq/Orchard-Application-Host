@@ -110,10 +110,18 @@ namespace Lombiq.OrchardAppHost
         {
             return OrchardStarter.CreateHostContainer(builder =>
             {
-                var hostEnvironment = new AppHostEnvironment();
-                hostEnvironment.AppDomainRestartRequested += Startup;
-                builder.RegisterInstance(hostEnvironment).As<IHostEnvironment>().SingleInstance();
-                builder.RegisterType<AppHostAppDataFolderRoot>().As<IAppDataFolderRoot>().SingleInstance();
+                builder.Register(c =>
+                {
+                    var context = c.Resolve<IComponentContext>();
+                    var hostEnvironment = new AppHostEnvironment(c.Resolve<IVirtualPathProvider>());
+                    hostEnvironment.AppDomainRestartRequested += Startup;
+                    return hostEnvironment;
+                }).As<IHostEnvironment>().SingleInstance();
+                var appDataRootRegistration = builder.RegisterType<AppHostAppDataFolderRoot>().As<IAppDataFolderRoot>().SingleInstance();
+                if (!string.IsNullOrEmpty(_settings.AppDataFolderPath))
+                {
+                    appDataRootRegistration.WithParameter(new NamedParameter("rootPath", _settings.AppDataFolderPath));
+                }
 
                 RegisterVolatileProvider<AppHostVirtualPathMonitor, IVirtualPathMonitor>(builder);
                 RegisterVolatileProvider<AppHostVirtualPathProvider, IVirtualPathProvider>(builder);
