@@ -78,6 +78,7 @@
     <Compile Include="Services\ImportedAssembliesExtensionProvider.cs" />
     <Compile Include="Services\LoggerService.cs" />
     <Compile Include="Services\ShellDescriptorManagerModule.cs" />
+    <Compile Include="Services\TransientShellSettingsManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Orchard\Orchard.Framework.csproj">
