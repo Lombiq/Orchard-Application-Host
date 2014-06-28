@@ -39,7 +39,7 @@ namespace Lombiq.OrchardAppHost
 
         // Having an overload without "registrations" enables calling it without the caller having a reference to Autofac.
         public OrchardAppHost(AppHostSettings settings)
-            : this(settings, new AppHostRegistrations())
+            : this(settings, null)
         {
         }
 
@@ -212,7 +212,7 @@ namespace Lombiq.OrchardAppHost
                     builder.RegisterType<ImportedAssembliesAccessor>().As<IImportedAssembliesAccessor>().SingleInstance()
                         .WithParameter(new NamedParameter("assemblies", _settings.ImportedExtensions));
 
-                    builder.RegisterType<ImportedAssembliesExtensionProvider>().As<IExtensionFolders>().As<IExtensionLoader>().SingleInstance();
+                    builder.RegisterType<ImportedAssembliesExtensionProvider>().As<IExtensionFolders, IExtensionLoader>().SingleInstance();
                 }
 
                 builder.RegisterType<AppHostCoreExtensionLoader>().As<IExtensionLoader>().SingleInstance();
@@ -237,8 +237,7 @@ namespace Lombiq.OrchardAppHost
             where TService : IVolatileProvider
         {
             return builder.RegisterType<TRegister>()
-                .As<TService>()
-                .As<IVolatileProvider>()
+                .As<TService, IVolatileProvider>()
                 .SingleInstance();
         }
 
