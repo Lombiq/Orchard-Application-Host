@@ -91,8 +91,13 @@ namespace Lombiq.OrchardAppHost
             {
                 foreach (var defaultShellFeatureState in _settings.DefaultShellFeatureStates)
                 {
-                    Run(scope => scope.Resolve<IFeatureManager>().EnableFeatures(defaultShellFeatureState.EnabledFeatures),
-                        defaultShellFeatureState.ShellName);
+                    Run(scope =>
+                    {
+                        IFeatureManager featureManager;
+                        if (!scope.TryResolve<IFeatureManager>(out featureManager)) return; // Happens for setup shell.
+                        featureManager.EnableFeatures(defaultShellFeatureState.EnabledFeatures);
+                    },
+                    defaultShellFeatureState.ShellName);
                 }
             }
         }
@@ -125,8 +130,7 @@ namespace Lombiq.OrchardAppHost
                     {
                         httpContext = new AppHostHttpContextAccessor.HttpContextPlaceholder();
                     }
-
-                    throw;
+                    else throw;
                 }
 
                 hca.Set(httpContext);
