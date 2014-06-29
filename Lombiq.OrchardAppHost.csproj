@@ -63,6 +63,7 @@
     <Compile Include="Configuration\AppHostSettings.cs" />
     <Compile Include="IOrchardAppHost.cs" />
     <Compile Include="OrchardAppHostExtensions.cs" />
+    <Compile Include="OrchardAppHostFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\ImportedAssembliesAccessor.cs" />
     <Compile Include="Services\ImportedExtensionsEnablingShellDescriptorManager.cs" />
@@ -78,6 +79,7 @@
     <Compile Include="Services\ImportedAssembliesExtensionProvider.cs" />
     <Compile Include="Services\LoggerService.cs" />
     <Compile Include="Services\ShellDescriptorManagerModule.cs" />
+    <Compile Include="Services\TransientShellDescriptorManager.cs" />
     <Compile Include="Services\TransientShellSettingsManager.cs" />
   </ItemGroup>
   <ItemGroup>
