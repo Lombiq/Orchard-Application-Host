@@ -13,8 +13,10 @@ using Orchard;
 using Orchard.Caching;
 using Orchard.Environment;
 using Orchard.Environment.Configuration;
+using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Folders;
 using Orchard.Environment.Extensions.Loaders;
+using Orchard.Environment.Features;
 using Orchard.Exceptions;
 using Orchard.FileSystems.AppData;
 using Orchard.FileSystems.Dependencies;
@@ -52,19 +54,6 @@ namespace Lombiq.OrchardAppHost
 
         public void Startup()
         {
-            // Is this needed?
-            //var clientBuildManager = new ClientBuildManager("/", @"E:\Projects\Munka\Lombiq\Orchard Dev Hg\src\Orchard.Web");
-            //clientBuildManager.CompileApplicationDependencies();
-
-            if (_settings.ImportedExtensions == null)
-            {
-                _settings.ImportedExtensions = Enumerable.Empty<ShellExtensions>();
-            }
-            foreach (var extensions in _settings.ImportedExtensions)
-            {
-                extensions.Extensions = extensions.Extensions.Union(new[] { this.GetType().Assembly }); 
-            }
-
             // Trying to load not found assemblies from the Dependencies folder. This is instead of the assemblyBinding config
             // in Orchard's Web.config.
             AppDomain.CurrentDomain.AssemblyResolve += (object sender, ResolveEventArgs args) =>
@@ -72,8 +61,7 @@ namespace Lombiq.OrchardAppHost
                 // Don't run if the host container is not initialized or was disposed.
                 if (_hostContainer == null) return null;
 
-                // Splitting the name as sometimes it's the full assembly name (e.g. "Orchard.Tokens, Version=1.8.0.0...".
-                var assemblyName = args.Name.Split(',')[0];
+                var assemblyName = args.Name.ToAssemblyShortName();
                 var dependenciesFolder = _hostContainer.Resolve<IDependenciesFolder>();
                 var path = string.Empty;
 
@@ -81,7 +69,7 @@ namespace Lombiq.OrchardAppHost
                 if (dependency != null) path = dependency.VirtualPath;
                 else if (args.RequestingAssembly != null)
                 {
-                    dependency = dependenciesFolder.GetDescriptor(args.RequestingAssembly.FullName.Split(',')[0]);
+                    dependency = dependenciesFolder.GetDescriptor(args.RequestingAssembly.ShortName());
                     if (dependency != null)
                     {
                         var reference = dependency.References.SingleOrDefault(r => r.Name == assemblyName);
@@ -94,7 +82,17 @@ namespace Lombiq.OrchardAppHost
             };
 
             _hostContainer = CreateHostContainer();
+
             _hostContainer.Resolve<IOrchardHost>().Initialize();
+
+            if (_settings.DefaultShellFeatureStates != null && _settings.DefaultShellFeatureStates.Any())
+            {
+                foreach (var defaultShellFeatureState in _settings.DefaultShellFeatureStates)
+                {
+                    Run(scope => scope.Resolve<IFeatureManager>().EnableFeatures(defaultShellFeatureState.EnabledFeatures),
+                        defaultShellFeatureState.ShellName);
+                }
+            }
         }
 
         public void Run(Action<IWorkContextScope> process, string shellName)
@@ -119,7 +117,7 @@ namespace Lombiq.OrchardAppHost
                 }
 
                 // Either this or running tasks through IProcessingEngine as below. EndRequest() also restarts updated shells but
-                // can have unwanted sideeffects in the future.
+                // can have unwanted side effects in the future.
                 _hostContainer.Resolve<IOrchardHost>().EndRequest();
                 //var processingEngine = scope.Resolve<IProcessingEngine>();
                 //while (processingEngine.AreTasksPending())
@@ -162,8 +160,6 @@ namespace Lombiq.OrchardAppHost
                 RegisterVolatileProvider<AppHostVirtualPathProvider, IVirtualPathProvider>(builder);
                 RegisterVolatileProvider<AppHostWebSiteFolder, IWebSiteFolder>(builder);
 
-                var assembliesImported = _settings.ImportedExtensions != null && _settings.ImportedExtensions.Any();
-
                 var shellRegistrations = new ShellContainerRegistrations
                 {
                     Registrations = shellBuilder =>
@@ -173,16 +169,6 @@ namespace Lombiq.OrchardAppHost
                         RegisterVolatileProviderForShell<AppHostVirtualPathMonitor, IVirtualPathMonitor>(shellBuilder);
                         RegisterVolatileProviderForShell<AppHostVirtualPathProvider, IVirtualPathProvider>(shellBuilder);
                         RegisterVolatileProviderForShell<AppHostWebSiteFolder, IWebSiteFolder>(shellBuilder);
-
-                        if (assembliesImported)
-                        {
-                            // This is needed despite being also automatically registered by the shell container factory because it's
-                            // resolved too early.
-                            shellBuilder.RegisterModule<ShellDescriptorManagerModule>();
-
-                            shellBuilder.RegisterType<ImportedExtensionsAccessor>().As<IImportedExtensionsAccessor>().InstancePerMatchingLifetimeScope("shell")
-                                .WithParameter(new NamedParameter("extensions", _settings.ImportedExtensions));
-                        }
 
                         if (_registrations.ShellRegistrations != null)
                         {
@@ -213,10 +199,10 @@ namespace Lombiq.OrchardAppHost
                 }
 
                 // Handling imported assemblies.
-                if (assembliesImported)
+                if (_settings.ImportedExtensions != null && _settings.ImportedExtensions.Any())
                 {
                     builder.RegisterType<ImportedExtensionsProvider>().As<IExtensionFolders, IExtensionLoader>().SingleInstance()
-                        .WithParameter(new NamedParameter("extensions", _settings.ImportedExtensions.SelectMany(extensions => extensions.Extensions)));
+                        .WithParameter(new NamedParameter("extensions", _settings.ImportedExtensions));
                 }
 
                 if (_settings.DisableConfiguratonCaches)

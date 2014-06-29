@@ -51,7 +51,7 @@ namespace Lombiq.OrchardAppHost
             var shellRegistrations = (registrations.ShellRegistrations == null) ? builder => { } : registrations.ShellRegistrations;
             registrations.ShellRegistrations = builder =>
             {
-                var shellDescriptorManager = new ShellDescriptorManager();
+                var shellDescriptorManager = new TransientShellDescriptorManager();
                 if (enabledFeatures == null) enabledFeatures = Enumerable.Empty<ShellFeature>();
                 enabledFeatures = enabledFeatures.Union(new[] { new ShellFeature { Name = "Orchard.Framework" } });
                 shellDescriptorManager.UpdateShellDescriptor(0, enabledFeatures, null);
@@ -61,14 +61,6 @@ namespace Lombiq.OrchardAppHost
             };
 
             return StartHost(settings, registrations);
-        }
-
-
-        private class ShellDescriptorManager : TransientShellDescriptorManager
-        {
-            public ShellDescriptorManager() : base()
-            {
-            }
         }
     }
 }

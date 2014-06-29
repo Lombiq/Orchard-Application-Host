@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Orchard;
 using Orchard.Environment.Descriptor;
 using Orchard.Environment.Descriptor.Models;
+using Orchard.Environment.Extensions;
 using Orchard.Localization;
 
 namespace Lombiq.OrchardAppHost.Services
@@ -17,7 +18,8 @@ namespace Lombiq.OrchardAppHost.Services
     /// <remarks>
     /// Must be abstract otherwise it would get auto-registered and override the default implementation all the time.
     /// </remarks>
-    public abstract class TransientShellDescriptorManager : IShellDescriptorManager, ISingletonDependency
+    [OrchardFeature("Lombiq.OrchardAppHost.TransientHost")]
+    public class TransientShellDescriptorManager : IShellDescriptorManager, ISingletonDependency
     {
         ReaderWriterLockSlim locker = new ReaderWriterLockSlim();
 
@@ -55,7 +57,7 @@ namespace Lombiq.OrchardAppHost.Services
         public Localizer T { get; set; }
 
 
-        protected TransientShellDescriptorManager()
+        public TransientShellDescriptorManager()
         {
             T = NullLocalizer.Instance;
         }

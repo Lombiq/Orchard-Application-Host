@@ -17,7 +17,7 @@ namespace Lombiq.OrchardAppHost.Services.Extensions
     /// </summary>
     public class ImportedExtensionsProvider : ExtensionLoaderBase, IExtensionFolders
     {
-        private readonly IEnumerable<Assembly> _extensions;
+        private readonly Dictionary<string, Extension> _extensionsByName;
         private readonly IVirtualPathProvider _virtualPathProvider;
 
         public override int Order { get { return 10; } }
@@ -29,28 +29,46 @@ namespace Lombiq.OrchardAppHost.Services.Extensions
             IVirtualPathProvider virtualPathProvider)
             : base(dependenciesFolder)
         {
-            _extensions = extensions;
+            // It's not nice to do this in the ctor but this way we spare to implement locking that would be needed with lazy-loading
+            // and this class will be instantiated once anyway.
+            _extensionsByName = extensions
+                .ToDictionary
+                (
+                    assembly => assembly.ShortName(),
+                    assembly => new Extension
+                        {
+                            Assembly = assembly,
+                            Features = assembly
+                                .GetExportedTypes()
+                                .Where(type => type.GetCustomAttribute(typeof(OrchardFeatureAttribute)) != null)
+                                .Select(type => ((OrchardFeatureAttribute)type.GetCustomAttribute(typeof(OrchardFeatureAttribute))).FeatureName)
+                                .Union(new[] { assembly.ShortName() })
+                                .Distinct()
+                        }
+                );
+
             _virtualPathProvider = virtualPathProvider;
         }
 
 
         public IEnumerable<ExtensionDescriptor> AvailableExtensions()
         {
-            return _extensions.
-                Select(assembly =>
+            return _extensionsByName.
+                Select(extensionByName =>
                     {
                         var extensionDescriptor = new ExtensionDescriptor
                         {
                             Location = string.Empty,
-                            Id = assembly.FullName,
+                            Id = extensionByName.Key,
                             ExtensionType = DefaultExtensionTypes.Module
                         };
 
-                        var features = new[] { new FeatureDescriptor
-                        {
-                            Extension = extensionDescriptor,
-                            Id = extensionDescriptor.Id
-                        }};
+                        var features = extensionByName.Value.Features.Select(feature =>
+                            new FeatureDescriptor
+                            {
+                                Extension = extensionDescriptor,
+                                Id = feature
+                            });
 
                         extensionDescriptor.Features = features;
 
@@ -73,9 +91,9 @@ namespace Lombiq.OrchardAppHost.Services.Extensions
 
         protected override ExtensionEntry LoadWorker(ExtensionDescriptor descriptor)
         {
-            var assembly = _extensions.SingleOrDefault(a => a.FullName == descriptor.Id);
+            if (!_extensionsByName.ContainsKey(descriptor.Id)) return null;
 
-            if (assembly == null) return null;
+            var assembly = _extensionsByName[descriptor.Id].Assembly;
 
             return new ExtensionEntry
             {
@@ -83,6 +101,13 @@ namespace Lombiq.OrchardAppHost.Services.Extensions
                 Assembly = assembly,
                 ExportedTypes = assembly.GetExportedTypes()
             };
+        }
+
+
+        private class Extension
+        {
+            public Assembly Assembly { get; set; }
+            public IEnumerable<string> Features { get; set; }
         }
     }
 }
