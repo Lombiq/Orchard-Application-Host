@@ -9,6 +9,13 @@ namespace Lombiq.OrchardAppHost.Configuration
         public IEnumerable<string> ModuleFolderPaths { get; set; }
         public IEnumerable<string> CoreModuleFolderPaths { get; set; }
         public IEnumerable<string> ThemeFolderPaths { get; set; }
-        public IEnumerable<Assembly> ImportedExtensions { get; set; }
+        public IEnumerable<ShellExtensions> ImportedExtensions { get; set; }
+    }
+
+
+    public class ShellExtensions
+    {
+        public string ShellName { get; set; }
+        public IEnumerable<Assembly> Extensions { get; set; }
     }
 }

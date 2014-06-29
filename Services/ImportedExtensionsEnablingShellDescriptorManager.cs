@@ -9,12 +9,12 @@ namespace Lombiq.OrchardAppHost.Services
     internal class ImportedExtensionsEnablingShellDescriptorManager : IShellDescriptorManager
     {
         private readonly IShellDescriptorManager _decorated;
-        private readonly IImportedAssembliesAccessor _assembliesAccessor;
+        private readonly IImportedExtensionsAccessor _assembliesAccessor;
 
 
         public ImportedExtensionsEnablingShellDescriptorManager(
             IShellDescriptorManager decorated,
-            IImportedAssembliesAccessor assembliesAccessor)
+            IImportedExtensionsAccessor assembliesAccessor)
         {
             _decorated = decorated;
             _assembliesAccessor = assembliesAccessor;
@@ -24,7 +24,7 @@ namespace Lombiq.OrchardAppHost.Services
         public ShellDescriptor GetShellDescriptor()
         {
             var shellDescriptor = _decorated.GetShellDescriptor();
-            shellDescriptor.Features = shellDescriptor.Features.Union(_assembliesAccessor.GetImportedAssemblies().Select(assembly => new ShellFeature { Name = assembly.FullName }));
+            shellDescriptor.Features = shellDescriptor.Features.Union(_assembliesAccessor.GetImportedExtensions().Select(assembly => new ShellFeature { Name = assembly.FullName }));
             return shellDescriptor;
         }
 

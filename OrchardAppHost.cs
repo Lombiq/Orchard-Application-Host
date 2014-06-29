@@ -56,9 +56,12 @@ namespace Lombiq.OrchardAppHost
 
             if (_settings.ImportedExtensions == null)
             {
-                _settings.ImportedExtensions = Enumerable.Empty<Assembly>();
+                _settings.ImportedExtensions = Enumerable.Empty<ShellExtensions>();
             }
-            _settings.ImportedExtensions = _settings.ImportedExtensions.Union(new[] { this.GetType().Assembly });
+            foreach (var extensions in _settings.ImportedExtensions)
+            {
+                extensions.Extensions = extensions.Extensions.Union(new[] { this.GetType().Assembly }); 
+            }
 
             // Trying to load not found assemblies from the Dependencies folder. This is instead of the assemblyBinding config
             // in Orchard's Web.config.
@@ -162,13 +165,16 @@ namespace Lombiq.OrchardAppHost
                     {
                         // Despite imported assemblies being handled these registrations are necessary, because they are needed too early.
                         shellBuilder.RegisterType<AppHostAppDataFolderRoot>().As<IAppDataFolderRoot>().InstancePerMatchingLifetimeScope("shell");
-                        RegisterVolatileProvider<AppHostVirtualPathMonitor, IVirtualPathMonitor>(shellBuilder);
-                        RegisterVolatileProvider<AppHostVirtualPathProvider, IVirtualPathProvider>(shellBuilder);
-                        RegisterVolatileProvider<AppHostWebSiteFolder, IWebSiteFolder>(shellBuilder);
+                        RegisterVolatileProviderForShell<AppHostVirtualPathMonitor, IVirtualPathMonitor>(shellBuilder);
+                        RegisterVolatileProviderForShell<AppHostVirtualPathProvider, IVirtualPathProvider>(shellBuilder);
+                        RegisterVolatileProviderForShell<AppHostWebSiteFolder, IWebSiteFolder>(shellBuilder);
 
                         if (assembliesImported)
                         {
                             shellBuilder.RegisterModule<ShellDescriptorManagerModule>();
+
+                            shellBuilder.RegisterType<ImportedExtensionsAccessor>().As<IImportedExtensionsAccessor>().InstancePerMatchingLifetimeScope("shell")
+                                .WithParameter(new NamedParameter("extensions", _settings.ImportedExtensions));
                         }
 
                         if (_registrations.ShellRegistrations != null)
@@ -202,10 +208,8 @@ namespace Lombiq.OrchardAppHost
                 // Handling imported assemblies.
                 if (assembliesImported)
                 {
-                    builder.RegisterType<ImportedAssembliesAccessor>().As<IImportedAssembliesAccessor>().SingleInstance()
-                        .WithParameter(new NamedParameter("assemblies", _settings.ImportedExtensions));
-
-                    builder.RegisterType<ImportedAssembliesExtensionProvider>().As<IExtensionFolders, IExtensionLoader>().SingleInstance();
+                    builder.RegisterType<ImportedExtensionsProvider>().As<IExtensionFolders, IExtensionLoader>().SingleInstance()
+                        .WithParameter(new NamedParameter("extensions", _settings.ImportedExtensions.SelectMany(extensions => extensions.Extensions)));
                 }
 
                 builder.RegisterType<AppHostCoreExtensionLoader>().As<IExtensionLoader>().SingleInstance();

@@ -1,36 +1,42 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using Lombiq.OrchardAppHost.Configuration;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Folders;
 using Orchard.Environment.Extensions.Loaders;
 using Orchard.Environment.Extensions.Models;
 using Orchard.FileSystems.Dependencies;
+using Orchard.FileSystems.VirtualPath;
 
 namespace Lombiq.OrchardAppHost.Services
 {
     /// <summary>
     /// Deals with extensions loaded on the fly when configuring the OrchardAppHost.
     /// </summary>
-    public class ImportedAssembliesExtensionProvider : ExtensionLoaderBase, IExtensionFolders
+    public class ImportedExtensionsProvider : ExtensionLoaderBase, IExtensionFolders
     {
-        private readonly IImportedAssembliesAccessor _assembliesAccessor;
+        private readonly IEnumerable<Assembly> _extensions;
+        private readonly IVirtualPathProvider _virtualPathProvider;
 
         public override int Order { get { return 10; } }
 
 
-        public ImportedAssembliesExtensionProvider(
+        public ImportedExtensionsProvider(
             IDependenciesFolder dependenciesFolder,
-            IImportedAssembliesAccessor assembliesAccessor)
+            IEnumerable<Assembly> extensions,
+            IVirtualPathProvider virtualPathProvider)
             : base(dependenciesFolder)
         {
-            _assembliesAccessor = assembliesAccessor;
+            _extensions = extensions;
+            _virtualPathProvider = virtualPathProvider;
         }
 
 
         public IEnumerable<ExtensionDescriptor> AvailableExtensions()
         {
-            return _assembliesAccessor.GetImportedAssemblies().
+            return _extensions.
                 Select(assembly =>
                     {
                         var extensionDescriptor = new ExtensionDescriptor
@@ -54,7 +60,7 @@ namespace Lombiq.OrchardAppHost.Services
 
         public override ExtensionProbeEntry Probe(ExtensionDescriptor descriptor)
         {
-            var path = Path.Combine(descriptor.Location, descriptor.Id, ".dll");
+            var path = _virtualPathProvider.Combine(descriptor.Location, descriptor.Id, ".dll");
 
             return new ExtensionProbeEntry
             {
@@ -67,7 +73,7 @@ namespace Lombiq.OrchardAppHost.Services
 
         protected override ExtensionEntry LoadWorker(ExtensionDescriptor descriptor)
         {
-            var assembly = _assembliesAccessor.GetImportedAssemblies().SingleOrDefault(a => a.FullName == descriptor.Id);
+            var assembly = _extensions.SingleOrDefault(a => a.FullName == descriptor.Id);
 
             if (assembly == null) return null;
 

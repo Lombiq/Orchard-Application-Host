@@ -14,7 +14,7 @@ namespace Lombiq.OrchardAppHost.Services
                 {
                     var decorator = new ImportedExtensionsEnablingShellDescriptorManager(
                         (IShellDescriptorManager)e.Instance,
-                        e.Context.Resolve<IImportedAssembliesAccessor>());
+                        e.Context.Resolve<IImportedExtensionsAccessor>());
                     e.Instance = decorator;
                 };
         }
