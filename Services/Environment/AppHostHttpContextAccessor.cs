@@ -1,29 +1,38 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Web;
+using Autofac;
+using Autofac.Core;
+using Orchard;
 using Orchard.Mvc;
 
 namespace Lombiq.OrchardAppHost.Services.Environment
 {
     public class AppHostHttpContextAccessor : IHttpContextAccessor
     {
-        private Lazy<HttpContextBase> _httpContextLazy;
+        private HttpContextBase _stub = null;
 
 
-        // Lazy is needed because there is a circular dependency: WorkContextAccessor -> this -> HttpContextBase -> WCA...
-        public AppHostHttpContextAccessor(Lazy<HttpContextBase> httpContextLazy)
-        {
-            _httpContextLazy = httpContextLazy;
-        }
-        
-    
         public HttpContextBase Current()
         {
-            return _httpContextLazy.Value;
+            return _stub;
         }
 
         public void Set(HttpContextBase stub)
         {
-            _httpContextLazy = new Lazy<HttpContextBase>(() => stub);
+            _stub = stub;
+        }
+
+
+        public class HttpContextPlaceholder : HttpContextBase
+        {
+            private readonly IDictionary _items = new Dictionary<object, object>();
+
+            public override IDictionary Items
+            {
+                get { return _items; }
+            }
         }
     }
 }

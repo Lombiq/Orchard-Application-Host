@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Autofac;
 using Autofac.Builder;
+using Autofac.Core;
 using Lombiq.OrchardAppHost.Configuration;
 using Lombiq.OrchardAppHost.Services;
 using Lombiq.OrchardAppHost.Services.Environment;
@@ -98,9 +100,37 @@ namespace Lombiq.OrchardAppHost
         public void Run(Action<IWorkContextScope> process, string shellName)
         {
             var shellContext = _hostContainer.Resolve<IOrchardHost>().GetShellContext(new ShellSettings { Name = shellName });
-            using (var scope = shellContext.LifetimeScope.BeginLifetimeScope())
+            // We need a single HCA, and thus the same HttpContext throughout this scope to carry the work context. Especially
+            // important for async code, see: https://orchard.codeplex.com/workitem/20509
+            // Using InstancePerLifetimeScope() inside the shell ContinerBuilder still yields multiple instantiations.
+            var hca = new AppHostHttpContextAccessor();
+            using (var scope = shellContext.LifetimeScope.BeginLifetimeScope(builder =>
+                            builder.RegisterInstance(hca).As<IHttpContextAccessor>()))
             {
-                var httpContext = scope.Resolve<IHttpContextAccessor>().Current();
+                HttpContextBase httpContext;
+
+                // Resolving will fail if it's just the setup shell. TryResolve() would still cause this exception.
+                try
+                {
+                    // Will return the stub from Orchard.Mvc.MvcModule. There are some direct resolve calls to HttpContextBase in
+                    // Orchard but it doesn't matter here (otherwise it does: https://orchard.codeplex.com/workitem/20778) as the
+                    // point is to keep the same WorkContext in HttpContext.Items the same throughout this scope (unless a new
+                    // WCS is started somewhere).
+                    httpContext = scope.Resolve<HttpContextBase>();
+                }
+                catch (DependencyResolutionException ex)
+                {
+                    // Unfortunately the only way to identify the specific exception is by its message.
+                    if (ex.Message.StartsWith("No scope with a Tag matching 'work' is visible from the scope in which the instance"))
+                    {
+                        httpContext = new AppHostHttpContextAccessor.HttpContextPlaceholder();
+                    }
+
+                    throw;
+                }
+
+                hca.Set(httpContext);
+
                 using (var workContext = scope.Resolve<IWorkContextAccessor>().CreateWorkContextScope(httpContext))
                 {
                     try
@@ -166,6 +196,7 @@ namespace Lombiq.OrchardAppHost
                     {
                         // Despite imported assemblies being handled these registrations are necessary, because they are needed too early.
                         shellBuilder.RegisterType<AppHostAppDataFolderRoot>().As<IAppDataFolderRoot>().InstancePerMatchingLifetimeScope("shell");
+                        
                         RegisterVolatileProviderForShell<AppHostVirtualPathMonitor, IVirtualPathMonitor>(shellBuilder);
                         RegisterVolatileProviderForShell<AppHostVirtualPathProvider, IVirtualPathProvider>(shellBuilder);
                         RegisterVolatileProviderForShell<AppHostWebSiteFolder, IWebSiteFolder>(shellBuilder);
@@ -177,9 +208,6 @@ namespace Lombiq.OrchardAppHost
                     }
                 };
                 builder.RegisterInstance(shellRegistrations).As<IShellContainerRegistrations>();
-
-                // Need to be a new instance per each life time scope because it's needed to carry the work context through the scope.
-                builder.RegisterType<AppHostHttpContextAccessor>().As<IHttpContextAccessor>().InstancePerLifetimeScope();
 
                 // Extension folders should be configured.
                 if (_settings.ModuleFolderPaths != null && _settings.ModuleFolderPaths.Any())
