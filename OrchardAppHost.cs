@@ -69,6 +69,9 @@ namespace Lombiq.OrchardAppHost
             // in Orchard's Web.config.
             AppDomain.CurrentDomain.AssemblyResolve += (object sender, ResolveEventArgs args) =>
             {
+                // Don't run if the host container is not initialized or was disposed.
+                if (_hostContainer == null) return null;
+
                 // Splitting the name as sometimes it's the full assembly name (e.g. "Orchard.Tokens, Version=1.8.0.0...".
                 var assemblyName = args.Name.Split(',')[0];
                 var dependenciesFolder = _hostContainer.Resolve<IDependenciesFolder>();
@@ -173,7 +176,8 @@ namespace Lombiq.OrchardAppHost
 
                         if (assembliesImported)
                         {
-                            // This is needed despite being also automatically registered by the shell container factory.
+                            // This is needed despite being also automatically registered by the shell container factory because it's
+                            // resolved too early.
                             shellBuilder.RegisterModule<ShellDescriptorManagerModule>();
 
                             shellBuilder.RegisterType<ImportedExtensionsAccessor>().As<IImportedExtensionsAccessor>().InstancePerMatchingLifetimeScope("shell")
@@ -213,6 +217,11 @@ namespace Lombiq.OrchardAppHost
                 {
                     builder.RegisterType<ImportedExtensionsProvider>().As<IExtensionFolders, IExtensionLoader>().SingleInstance()
                         .WithParameter(new NamedParameter("extensions", _settings.ImportedExtensions.SelectMany(extensions => extensions.Extensions)));
+                }
+
+                if (_settings.DisableConfiguratonCaches)
+                {
+                    builder.RegisterModule<ConfigurationCacheDisablingModule>(); 
                 }
 
                 builder.RegisterType<AppHostCoreExtensionLoader>().As<IExtensionLoader>().SingleInstance();

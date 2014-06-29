@@ -10,6 +10,7 @@ namespace Lombiq.OrchardAppHost.Configuration
         public IEnumerable<string> CoreModuleFolderPaths { get; set; }
         public IEnumerable<string> ThemeFolderPaths { get; set; }
         public IEnumerable<ShellExtensions> ImportedExtensions { get; set; }
+        public bool DisableConfiguratonCaches { get; set; }
     }
 
 
