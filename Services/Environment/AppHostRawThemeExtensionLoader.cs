@@ -4,7 +4,7 @@ using Orchard.Environment.Extensions.Models;
 using Orchard.FileSystems.Dependencies;
 using Orchard.FileSystems.VirtualPath;
 
-namespace Lombiq.OrchardAppHost.Services
+namespace Lombiq.OrchardAppHost.Services.Environment
 {
     // Only overriding RawThemeExtensionLoader to be able to load extensions with the Location not just "~/Themes".
     public class AppHostRawThemeExtensionLoader : RawThemeExtensionLoader

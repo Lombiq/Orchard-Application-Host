@@ -1,7 +1,7 @@
 ﻿using Orchard.FileSystems.AppData;
 using Orchard.FileSystems.VirtualPath;
 
-namespace Lombiq.OrchardAppHost.Services
+namespace Lombiq.OrchardAppHost.Services.Environment
 {
     public class AppHostAppDataFolderRoot : IAppDataFolderRoot
     {

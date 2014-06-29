@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Orchard.FileSystems.VirtualPath;
 
-namespace Lombiq.OrchardAppHost.Services
+namespace Lombiq.OrchardAppHost.Services.Environment
 {
     public class AppHostVirtualPathProvider : DefaultVirtualPathProvider, IVirtualPathProvider
     {

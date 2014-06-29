@@ -2,7 +2,7 @@
 using Autofac.Core;
 using Orchard.Environment.Descriptor;
 
-namespace Lombiq.OrchardAppHost.Services
+namespace Lombiq.OrchardAppHost.Services.Extensions
 {
     public class ShellDescriptorManagerModule : Module
     {

@@ -4,7 +4,7 @@ using Orchard.Environment.Configuration;
 using System.Linq;
 using Lombiq.OrchardAppHost.Configuration;
 
-namespace Lombiq.OrchardAppHost.Services
+namespace Lombiq.OrchardAppHost.Services.Extensions
 {
     /// <summary>
     /// Gets assemblies imported to be registered as extensions when configuring the OrchardAppHost.

@@ -3,7 +3,7 @@ using System.IO;
 using Orchard.Caching;
 using Orchard.FileSystems.VirtualPath;
 
-namespace Lombiq.OrchardAppHost.Services
+namespace Lombiq.OrchardAppHost.Services.Environment
 {
     // Copied from CommandHostVirtualPathMonitor
     public class AppHostVirtualPathMonitor : IVirtualPathMonitor

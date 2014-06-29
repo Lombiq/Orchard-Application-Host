@@ -3,7 +3,7 @@ using System.Linq;
 using Orchard.Environment.Descriptor;
 using Orchard.Environment.Descriptor.Models;
 
-namespace Lombiq.OrchardAppHost.Services
+namespace Lombiq.OrchardAppHost.Services.Extensions
 {
     // Should be internal so it isn't registerd automatically but just through ShellDescriptorManagerModule
     internal class ImportedExtensionsEnablingShellDescriptorManager : IShellDescriptorManager

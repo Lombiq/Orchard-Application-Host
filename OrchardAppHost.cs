@@ -7,6 +7,8 @@ using Autofac;
 using Autofac.Builder;
 using Lombiq.OrchardAppHost.Configuration;
 using Lombiq.OrchardAppHost.Services;
+using Lombiq.OrchardAppHost.Services.Environment;
+using Lombiq.OrchardAppHost.Services.Extensions;
 using Orchard;
 using Orchard.Caching;
 using Orchard.Environment;
@@ -171,6 +173,7 @@ namespace Lombiq.OrchardAppHost
 
                         if (assembliesImported)
                         {
+                            // This is needed despite being also automatically registered by the shell container factory.
                             shellBuilder.RegisterModule<ShellDescriptorManagerModule>();
 
                             shellBuilder.RegisterType<ImportedExtensionsAccessor>().As<IImportedExtensionsAccessor>().InstancePerMatchingLifetimeScope("shell")

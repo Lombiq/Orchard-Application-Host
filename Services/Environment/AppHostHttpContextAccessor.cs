@@ -2,7 +2,7 @@
 using System.Web;
 using Orchard.Mvc;
 
-namespace Lombiq.OrchardAppHost.Services
+namespace Lombiq.OrchardAppHost.Services.Environment
 {
     public class AppHostHttpContextAccessor : IHttpContextAccessor
     {
