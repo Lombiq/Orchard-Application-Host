@@ -9,8 +9,7 @@ using Autofac.Builder;
 using Autofac.Core;
 using Lombiq.OrchardAppHost.Configuration;
 using Lombiq.OrchardAppHost.Services;
-using Lombiq.OrchardAppHost.Services.Environment;
-using Lombiq.OrchardAppHost.Services.Extensions;
+using Lombiq.OrchardAppHost.Environment;
 using Orchard;
 using Orchard.Caching;
 using Orchard.Environment;
@@ -26,6 +25,8 @@ using Orchard.FileSystems.VirtualPath;
 using Orchard.FileSystems.WebSite;
 using Orchard.Logging;
 using Orchard.Mvc;
+using Orchard.Environment.Descriptor;
+using Orchard.Environment.Descriptor.Models;
 
 namespace Lombiq.OrchardAppHost
 {
@@ -93,9 +94,17 @@ namespace Lombiq.OrchardAppHost
                 {
                     Run(scope =>
                     {
-                        IFeatureManager featureManager;
-                        if (!scope.TryResolve<IFeatureManager>(out featureManager)) return; // Happens for setup shell.
-                        featureManager.EnableFeatures(defaultShellFeatureState.EnabledFeatures);
+                        // Don't run on e.g. the setup shell.
+                        if (scope.Resolve<ShellSettings>().State != TenantState.Running) return;
+
+                        // Pre-enabling features to load them early, so they will work even if e.g. they override an
+                        // IFeatureEventHandler implementation.
+                        var shellDescriptorManager = scope.Resolve<IShellDescriptorManager>();
+                        var shellDescriptor = shellDescriptorManager.GetShellDescriptor();
+                        shellDescriptor.Features.Union(defaultShellFeatureState.EnabledFeatures.Select(feature => new ShellFeature { Name = feature }));
+                        shellDescriptorManager.UpdateShellDescriptor(shellDescriptor.SerialNumber, shellDescriptor.Features, shellDescriptor.Parameters);
+
+                        scope.Resolve<IFeatureManager>().EnableFeatures(defaultShellFeatureState.EnabledFeatures);
                     },
                     defaultShellFeatureState.ShellName);
                 }
@@ -153,9 +162,6 @@ namespace Lombiq.OrchardAppHost
                 // Either this or running tasks through IProcessingEngine as below. EndRequest() also restarts updated shells but
                 // can have unwanted side effects in the future.
                 _hostContainer.Resolve<IOrchardHost>().EndRequest();
-                //var processingEngine = scope.Resolve<IProcessingEngine>();
-                //while (processingEngine.AreTasksPending())
-                //    processingEngine.ExecuteNextTask();
             }
         }
 
@@ -200,7 +206,7 @@ namespace Lombiq.OrchardAppHost
                     {
                         // Despite imported assemblies being handled these registrations are necessary, because they are needed too early.
                         shellBuilder.RegisterType<AppHostAppDataFolderRoot>().As<IAppDataFolderRoot>().InstancePerMatchingLifetimeScope("shell");
-                        
+
                         RegisterVolatileProviderForShell<AppHostVirtualPathMonitor, IVirtualPathMonitor>(shellBuilder);
                         RegisterVolatileProviderForShell<AppHostVirtualPathProvider, IVirtualPathProvider>(shellBuilder);
                         RegisterVolatileProviderForShell<AppHostWebSiteFolder, IWebSiteFolder>(shellBuilder);
@@ -239,7 +245,7 @@ namespace Lombiq.OrchardAppHost
 
                 if (_settings.DisableConfiguratonCaches)
                 {
-                    builder.RegisterModule<ConfigurationCacheDisablingModule>(); 
+                    builder.RegisterModule<ConfigurationCacheDisablingModule>();
                 }
 
                 builder.RegisterType<AppHostCoreExtensionLoader>().As<IExtensionLoader>().SingleInstance();

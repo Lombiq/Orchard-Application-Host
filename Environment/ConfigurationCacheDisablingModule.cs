@@ -8,7 +8,7 @@ using Autofac.Core;
 using Orchard.Data;
 using Orchard.Environment.Descriptor;
 
-namespace Lombiq.OrchardAppHost.Services.Environment
+namespace Lombiq.OrchardAppHost.Environment
 {
     public class ConfigurationCacheDisablingModule : Module
     {

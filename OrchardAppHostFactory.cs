@@ -9,6 +9,8 @@ using Orchard.Environment.Configuration;
 using Autofac;
 using Orchard.Environment.Descriptor.Models;
 using Orchard.Environment.Descriptor;
+using Lombiq.OrchardAppHost.Environment;
+using Orchard.Environment.State;
 
 namespace Lombiq.OrchardAppHost
 {
@@ -45,17 +47,28 @@ namespace Lombiq.OrchardAppHost
                     shellSettingsManager.SaveSettings(new ShellSettings { Name = ShellSettings.DefaultName, State = TenantState.Running });
                     builder.RegisterInstance(shellSettingsManager).As<IShellSettingsManager>().SingleInstance();
 
+                    builder.RegisterType<HostTransientStore>().As<IHostTransientStore>().SingleInstance();
+
                     appRegistrations(builder);
                 };
 
             var shellRegistrations = (registrations.ShellRegistrations == null) ? builder => { } : registrations.ShellRegistrations;
             registrations.ShellRegistrations = builder =>
             {
-                var shellDescriptorManager = new TransientShellDescriptorManager();
                 if (enabledFeatures == null) enabledFeatures = Enumerable.Empty<ShellFeature>();
-                enabledFeatures = enabledFeatures.Union(new[] { new ShellFeature { Name = "Orchard.Framework" } });
-                shellDescriptorManager.UpdateShellDescriptor(0, enabledFeatures, null);
-                builder.RegisterInstance(shellDescriptorManager).As<IShellDescriptorManager>().SingleInstance();
+                enabledFeatures = enabledFeatures.Union(new[]
+                {
+                    new ShellFeature { Name = "Orchard.Framework" },
+                    new ShellFeature { Name = "Lombiq.OrchardAppHost.TransientHost" }
+                });
+
+                builder
+                    .RegisterInstance(new DefaultTransientShellDescriptorProvider(new ShellDescriptor { Features = enabledFeatures }))
+                    .As<IDefaultTransientShellDescriptorProvider>();
+
+                builder.RegisterType<TransientShellDescriptorManager>().As<IShellDescriptorManager>().SingleInstance();
+                builder.RegisterType<TransientShellStateManager>().As<IShellStateManager>().SingleInstance();
+                builder.RegisterType<TransientStore>().As<ITransientStore>().SingleInstance();
 
                 shellRegistrations(builder);
             };

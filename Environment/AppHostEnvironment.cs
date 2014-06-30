@@ -4,7 +4,7 @@ using System.Reflection;
 using Orchard.Environment;
 using Orchard.FileSystems.VirtualPath;
 
-namespace Lombiq.OrchardAppHost.Services.Environment
+namespace Lombiq.OrchardAppHost.Environment
 {
     public delegate void AppDomainRestartRequestedEventHandler();
 

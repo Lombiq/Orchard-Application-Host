@@ -10,7 +10,7 @@ using Orchard.Environment.Extensions.Models;
 using Orchard.FileSystems.Dependencies;
 using Orchard.FileSystems.VirtualPath;
 
-namespace Lombiq.OrchardAppHost.Services.Extensions
+namespace Lombiq.OrchardAppHost.Environment
 {
     /// <summary>
     /// Deals with extensions loaded on the fly when configuring the OrchardAppHost.

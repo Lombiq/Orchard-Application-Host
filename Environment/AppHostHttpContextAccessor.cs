@@ -7,7 +7,7 @@ using Autofac.Core;
 using Orchard;
 using Orchard.Mvc;
 
-namespace Lombiq.OrchardAppHost.Services.Environment
+namespace Lombiq.OrchardAppHost.Environment
 {
     public class AppHostHttpContextAccessor : IHttpContextAccessor
     {

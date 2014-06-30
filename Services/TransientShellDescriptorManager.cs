@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Orchard;
+using Orchard.Environment.Configuration;
 using Orchard.Environment.Descriptor;
 using Orchard.Environment.Descriptor.Models;
 using Orchard.Environment.Extensions;
@@ -19,53 +20,49 @@ namespace Lombiq.OrchardAppHost.Services
     /// Must be abstract otherwise it would get auto-registered and override the default implementation all the time.
     /// </remarks>
     [OrchardFeature("Lombiq.OrchardAppHost.TransientHost")]
-    public class TransientShellDescriptorManager : IShellDescriptorManager, ISingletonDependency
+    public class TransientShellDescriptorManager : IShellDescriptorManager
     {
-        ReaderWriterLockSlim locker = new ReaderWriterLockSlim();
+        private const string StoreKey = "Lombiq.OrchardAppHost.TransientShellDescriptorManager.ShellDescriptor";
 
-        private ShellDescriptor _shellDescriptor = null;
+        private readonly ITransientStore _transientStore;
+        private readonly IShellDescriptorManagerEventHandler _events;
+        private readonly ShellSettings _shellSettings;
+        private readonly IDefaultTransientShellDescriptorProvider _defaultTransientShellDescriptorProvider;
+
         private ShellDescriptor ShellDescriptor
         {
-            get
-            {
-                locker.EnterReadLock();
-
-                try
-                {
-                    return _shellDescriptor;
-                }
-                finally
-                {
-                    locker.ExitReadLock();
-                }
-            }
-            set
-            {
-                locker.EnterWriteLock();
-
-                try
-                {
-                    _shellDescriptor = value;
-                }
-                finally
-                {
-                    locker.ExitWriteLock();
-                }
-            }
+            get { return _transientStore.Get<ShellDescriptor>(StoreKey); }
+            set { _transientStore.Set(StoreKey, value); }
         }
 
-        public Localizer T { get; set; }
 
-
-        public TransientShellDescriptorManager()
+        public TransientShellDescriptorManager(
+            ITransientStore transientStore,
+            IShellDescriptorManagerEventHandler events,
+            ShellSettings shellSettings,
+            IDefaultTransientShellDescriptorProvider defaultTransientShellDescriptorProvider)
         {
-            T = NullLocalizer.Instance;
+            _transientStore = transientStore;
+            _events = events;
+            _shellSettings = shellSettings;
+            _defaultTransientShellDescriptorProvider = defaultTransientShellDescriptorProvider;
         }
 
 
         public ShellDescriptor GetShellDescriptor()
         {
-            return ShellDescriptor;
+            var shellDescriptor = ShellDescriptor;
+
+            if (shellDescriptor == null && _shellSettings.Name == ShellSettings.DefaultName && ShellDescriptor == null)
+            {
+                var defaultShellDescriptor = _defaultTransientShellDescriptorProvider.GetDefaultShellDescriptor();
+                if (defaultShellDescriptor != null)
+                {
+                    shellDescriptor = ShellDescriptor = defaultShellDescriptor; 
+                }
+            }
+
+            return shellDescriptor;
         }
 
         public void UpdateShellDescriptor(int priorSerialNumber, IEnumerable<ShellFeature> enabledFeatures, IEnumerable<ShellParameter> parameters)
@@ -73,17 +70,20 @@ namespace Lombiq.OrchardAppHost.Services
             var priorDescriptor = ShellDescriptor;
             var serialNumber = priorDescriptor == null ? 0 : priorDescriptor.SerialNumber;
             if (priorSerialNumber != serialNumber)
-                throw new InvalidOperationException(T("Invalid serial number for shell descriptor").ToString());
+                throw new InvalidOperationException("Invalid serial number for shell descriptor");
 
             if (enabledFeatures == null) enabledFeatures = Enumerable.Empty<ShellFeature>();
             if (parameters == null) parameters = Enumerable.Empty<ShellParameter>();
 
-            ShellDescriptor = new ShellDescriptor
+            var shellDescriptor = new ShellDescriptor
                 {
                     SerialNumber = ++serialNumber,
                     Features = enabledFeatures,
                     Parameters = parameters
                 };
+            ShellDescriptor = shellDescriptor;
+
+            _events.Changed(shellDescriptor, _shellSettings.Name);
         }
     }
 }

@@ -67,20 +67,27 @@
     <Compile Include="OrchardAppHostExtensions.cs" />
     <Compile Include="OrchardAppHostFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\Environment\ConfigurationCacheDisablingModule.cs" />
-    <Compile Include="Services\Environment\AppHostEnvironment.cs" />
+    <Compile Include="Environment\ConfigurationCacheDisablingModule.cs" />
+    <Compile Include="Environment\AppHostEnvironment.cs" />
     <Compile Include="OrchardAppHost.cs" />
-    <Compile Include="Services\Environment\AppHostAppDataFolderRoot.cs" />
-    <Compile Include="Services\Environment\AppHostHttpContextAccessor.cs" />
-    <Compile Include="Services\Environment\AppHostRawThemeExtensionLoader.cs" />
-    <Compile Include="Services\Environment\AppHostVirtualPathMonitor.cs" />
-    <Compile Include="Services\Environment\AppHostVirtualPathProvider.cs" />
-    <Compile Include="Services\Environment\AppHostWebSiteFolder.cs" />
-    <Compile Include="Services\Environment\AppHostCoreExtensionLoader.cs" />
-    <Compile Include="Services\Extensions\ImportedExtensionsProvider.cs" />
+    <Compile Include="Environment\AppHostAppDataFolderRoot.cs" />
+    <Compile Include="Environment\AppHostHttpContextAccessor.cs" />
+    <Compile Include="Environment\AppHostRawThemeExtensionLoader.cs" />
+    <Compile Include="Environment\AppHostVirtualPathMonitor.cs" />
+    <Compile Include="Environment\AppHostVirtualPathProvider.cs" />
+    <Compile Include="Environment\AppHostWebSiteFolder.cs" />
+    <Compile Include="Environment\AppHostCoreExtensionLoader.cs" />
+    <Compile Include="Environment\ImportedExtensionsProvider.cs" />
+    <Compile Include="Services\DefaultTransientShellDescriptorProvider.cs" />
     <Compile Include="Services\LoggerService.cs" />
+    <Compile Include="Services\NullAutomaticDataMigrations.cs" />
+    <Compile Include="Services\NullContentDefinitionManager.cs" />
+    <Compile Include="Services\NullDataMigrationCoordinator.cs" />
+    <Compile Include="Services\NullSiteService.cs" />
     <Compile Include="Services\TransientShellDescriptorManager.cs" />
     <Compile Include="Services\TransientShellSettingsManager.cs" />
+    <Compile Include="Services\TransientShellStateManager.cs" />
+    <Compile Include="Services\TransientStore.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Orchard\Orchard.Framework.csproj">

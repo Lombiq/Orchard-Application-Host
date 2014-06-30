@@ -2,7 +2,7 @@
 using Orchard.FileSystems.VirtualPath;
 using Orchard.FileSystems.WebSite;
 
-namespace Lombiq.OrchardAppHost.Services.Environment
+namespace Lombiq.OrchardAppHost.Environment
 {
     // Only needed because WebSiteFolder.Normalize() uses HostingEnvironment.
     public class AppHostWebSiteFolder : WebSiteFolder, IWebSiteFolder

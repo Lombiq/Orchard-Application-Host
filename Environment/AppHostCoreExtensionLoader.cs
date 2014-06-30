@@ -4,7 +4,7 @@ using Orchard.Environment.Extensions.Loaders;
 using Orchard.Environment.Extensions.Models;
 using Orchard.FileSystems.Dependencies;
 
-namespace Lombiq.OrchardAppHost.Services.Environment
+namespace Lombiq.OrchardAppHost.Environment
 {
     // Only overriding CoreExtensionLoader to be able to load extensions with the Location not just "~/Core".
     public class AppHostCoreExtensionLoader : CoreExtensionLoader
