@@ -258,9 +258,9 @@ namespace Lombiq.OrchardAppHost
 
                 builder.RegisterType<OrchardLog4netFactory>().As<Castle.Core.Logging.ILoggerFactory>().InstancePerLifetimeScope();
 
-                if (_registrations.AppRegistrations != null)
+                if (_registrations.HostRegistrations != null)
                 {
-                    _registrations.AppRegistrations(builder);
+                    _registrations.HostRegistrations(builder);
                 }
             });
         }

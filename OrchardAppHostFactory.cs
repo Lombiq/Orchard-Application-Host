@@ -16,16 +16,28 @@ namespace Lombiq.OrchardAppHost
 {
     public static class OrchardAppHostFactory
     {
+        /// <summary>
+        /// Creates and starts an App Host.
+        /// </summary>
         public static IOrchardAppHost StartHost()
         {
             return StartHost(null, null);
         }
 
+        /// <summary>
+        /// Creates and starts an App Host.
+        /// </summary>
+        /// <param name="settings">Settings for the App Host.</param>
         public static IOrchardAppHost StartHost(AppHostSettings settings)
         {
             return StartHost(settings, null);
         }
 
+        /// <summary>
+        /// Creates and starts an App Host.
+        /// </summary>
+        /// <param name="settings">Settings for the App Host.</param>
+        /// <param name="registrations">Dependency registrations for the App Host.</param>
         public static IOrchardAppHost StartHost(AppHostSettings settings, AppHostRegistrations registrations)
         {
             var host = new OrchardAppHost(settings, registrations);
@@ -34,14 +46,17 @@ namespace Lombiq.OrchardAppHost
         }
 
         /// <summary>
-        /// Creates and starts a persistence-less host that doesn't have a database connection.
+        /// Creates and starts a persistence-less App Host that doesn't have a database connection.
         /// </summary>
-        public static IOrchardAppHost StartTransientHost(AppHostSettings settings, AppHostRegistrations registrations, IEnumerable<ShellFeature> enabledFeatures)
+        /// <param name="settings">Settings for the App Host.</param>
+        /// <param name="registrations">Dependency registrations for the App Host.</param>
+        /// <param name="enabledStartupFeatures">Names of features to enable already when the shell starts.</param>
+        public static IOrchardAppHost StartTransientHost(AppHostSettings settings, AppHostRegistrations registrations, IEnumerable<ShellFeature> enabledStartupFeatures)
         {
             if (registrations == null) registrations = new AppHostRegistrations();
 
-            var appRegistrations = (registrations.AppRegistrations == null) ? builder => { } : registrations.AppRegistrations;
-            registrations.AppRegistrations = builder =>
+            var appRegistrations = (registrations.HostRegistrations == null) ? builder => { } : registrations.HostRegistrations;
+            registrations.HostRegistrations = builder =>
                 {
                     var shellSettingsManager = new TransientShellSettingsManager();
                     shellSettingsManager.SaveSettings(new ShellSettings { Name = ShellSettings.DefaultName, State = TenantState.Running });
@@ -55,15 +70,15 @@ namespace Lombiq.OrchardAppHost
             var shellRegistrations = (registrations.ShellRegistrations == null) ? builder => { } : registrations.ShellRegistrations;
             registrations.ShellRegistrations = builder =>
             {
-                if (enabledFeatures == null) enabledFeatures = Enumerable.Empty<ShellFeature>();
-                enabledFeatures = enabledFeatures.Union(new[]
+                if (enabledStartupFeatures == null) enabledStartupFeatures = Enumerable.Empty<ShellFeature>();
+                enabledStartupFeatures = enabledStartupFeatures.Union(new[]
                 {
                     new ShellFeature { Name = "Orchard.Framework" },
                     new ShellFeature { Name = "Lombiq.OrchardAppHost.TransientHost" }
                 });
 
                 builder
-                    .RegisterInstance(new DefaultTransientShellDescriptorProvider(new ShellDescriptor { Features = enabledFeatures }))
+                    .RegisterInstance(new DefaultTransientShellDescriptorProvider(new ShellDescriptor { Features = enabledStartupFeatures }))
                     .As<IDefaultTransientShellDescriptorProvider>();
 
                 builder.RegisterType<TransientShellDescriptorManager>().As<IShellDescriptorManager>().SingleInstance();

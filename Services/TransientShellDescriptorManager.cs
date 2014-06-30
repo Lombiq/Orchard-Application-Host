@@ -53,7 +53,7 @@ namespace Lombiq.OrchardAppHost.Services
         {
             var shellDescriptor = ShellDescriptor;
 
-            if (shellDescriptor == null && _shellSettings.Name == ShellSettings.DefaultName && ShellDescriptor == null)
+            if (shellDescriptor == null)
             {
                 var defaultShellDescriptor = _defaultTransientShellDescriptorProvider.GetDefaultShellDescriptor();
                 if (defaultShellDescriptor != null)

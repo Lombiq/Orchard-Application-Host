@@ -8,7 +8,14 @@ namespace Lombiq.OrchardAppHost.Configuration
     /// </summary>
     public class AppHostRegistrations
     {
-        public Action<ContainerBuilder> AppRegistrations { get; set; }
+        /// <summary>
+        /// Gets or set dependency registrations for the whole host.
+        /// </summary>
+        public Action<ContainerBuilder> HostRegistrations { get; set; }
+
+        /// <summary>
+        /// Gets or set dependency registrations for each shell.
+        /// </summary>
         public Action<ContainerBuilder> ShellRegistrations { get; set; }
     }
 }
