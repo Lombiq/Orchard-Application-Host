@@ -11,6 +11,7 @@ using Orchard.Environment.Descriptor.Models;
 using Orchard.Environment.Descriptor;
 using Lombiq.OrchardAppHost.Environment;
 using Orchard.Environment.State;
+using Lombiq.OrchardAppHost.Services.TransientHost;
 
 namespace Lombiq.OrchardAppHost
 {

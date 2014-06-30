@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Orchard.Environment.Descriptor.Models;
 
-namespace Lombiq.OrchardAppHost.Services
+namespace Lombiq.OrchardAppHost.Services.TransientHost
 {
     public interface IDefaultTransientShellDescriptorProvider
     {

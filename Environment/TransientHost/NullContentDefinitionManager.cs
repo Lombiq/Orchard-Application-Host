@@ -7,7 +7,7 @@ using Orchard.ContentManagement.MetaData;
 using Orchard.ContentManagement.MetaData.Models;
 using Orchard.Environment.Extensions;
 
-namespace Lombiq.OrchardAppHost.Services
+namespace Lombiq.OrchardAppHost.Services.TransientHost
 {
     [OrchardFeature("Lombiq.OrchardAppHost.TransientHost")]
     public class NullContentDefinitionManager : IContentDefinitionManager

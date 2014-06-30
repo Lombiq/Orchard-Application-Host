@@ -9,7 +9,7 @@ using Orchard.Environment.Extensions;
 using Orchard.Environment.State;
 using Orchard.Environment.State.Models;
 
-namespace Lombiq.OrchardAppHost.Services
+namespace Lombiq.OrchardAppHost.Services.TransientHost
 {
     [OrchardFeature("Lombiq.OrchardAppHost.TransientHost")]
     public class TransientShellStateManager : IShellStateManager, ISingletonDependency

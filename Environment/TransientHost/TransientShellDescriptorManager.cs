@@ -11,7 +11,7 @@ using Orchard.Environment.Descriptor.Models;
 using Orchard.Environment.Extensions;
 using Orchard.Localization;
 
-namespace Lombiq.OrchardAppHost.Services
+namespace Lombiq.OrchardAppHost.Services.TransientHost
 {
     /// <summary>
     /// An <see cref="Orchard.Environment.Descriptor.IShellDescriptorManager"/> implementation that doesn't persist shell descriptors.

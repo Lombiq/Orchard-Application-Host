@@ -8,16 +8,16 @@ using Orchard;
 using Orchard.Environment.Configuration;
 using Orchard.Environment.Extensions;
 
-namespace Lombiq.OrchardAppHost.Services
+namespace Lombiq.OrchardAppHost.Services.TransientHost
 {
     /// <summary>
     /// A service that stores data for the life time of the Orchard Application Host.
     /// </summary>
     public interface IHostTransientStore
-	{
+    {
         T Get<T>(string key);
         void Set(string key, object value);
-	}
+    }
 
 
     // Consumers can see stale data in a concurrent application...

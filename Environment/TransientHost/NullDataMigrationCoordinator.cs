@@ -7,7 +7,7 @@ using Orchard.Environment;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Models;
 
-namespace Lombiq.OrchardAppHost.Services
+namespace Lombiq.OrchardAppHost.Services.TransientHost
 {
     [OrchardFeature("Lombiq.OrchardAppHost.TransientHost")]
     [OrchardSuppressDependency("Orchard.Data.Migration.DataMigrationCoordinator")]

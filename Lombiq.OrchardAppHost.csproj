@@ -78,16 +78,16 @@
     <Compile Include="Environment\AppHostWebSiteFolder.cs" />
     <Compile Include="Environment\AppHostCoreExtensionLoader.cs" />
     <Compile Include="Environment\ImportedExtensionsProvider.cs" />
-    <Compile Include="Services\DefaultTransientShellDescriptorProvider.cs" />
+    <Compile Include="Environment\TransientHost\DefaultTransientShellDescriptorProvider.cs" />
     <Compile Include="Services\LoggerService.cs" />
-    <Compile Include="Services\NullAutomaticDataMigrations.cs" />
-    <Compile Include="Services\NullContentDefinitionManager.cs" />
-    <Compile Include="Services\NullDataMigrationCoordinator.cs" />
-    <Compile Include="Services\NullSiteService.cs" />
-    <Compile Include="Services\TransientShellDescriptorManager.cs" />
-    <Compile Include="Services\TransientShellSettingsManager.cs" />
-    <Compile Include="Services\TransientShellStateManager.cs" />
-    <Compile Include="Services\TransientStore.cs" />
+    <Compile Include="Environment\TransientHost\NullAutomaticDataMigrations.cs" />
+    <Compile Include="Environment\TransientHost\NullContentDefinitionManager.cs" />
+    <Compile Include="Environment\TransientHost\NullDataMigrationCoordinator.cs" />
+    <Compile Include="Environment\TransientHost\NullSiteService.cs" />
+    <Compile Include="Environment\TransientHost\TransientShellDescriptorManager.cs" />
+    <Compile Include="Environment\TransientHost\TransientShellSettingsManager.cs" />
+    <Compile Include="Environment\TransientHost\TransientShellStateManager.cs" />
+    <Compile Include="Environment\TransientHost\TransientStore.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Orchard\Orchard.Framework.csproj">

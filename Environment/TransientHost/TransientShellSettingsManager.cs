@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Orchard.Environment.Configuration;
 using Orchard.Environment.Extensions;
 
-namespace Lombiq.OrchardAppHost.Services
+namespace Lombiq.OrchardAppHost.Services.TransientHost
 {
     /// <summary>
     /// An <see cref="Orchard.Environment.Configuration.IShellSettingsManager"/> implementation that doesn't persist shell settings.
