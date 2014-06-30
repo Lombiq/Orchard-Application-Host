@@ -200,6 +200,8 @@ namespace Lombiq.OrchardAppHost
                         RegisterVolatileProviderForShell<AppHostVirtualPathProvider, IVirtualPathProvider>(shellBuilder);
                         RegisterVolatileProviderForShell<AppHostWebSiteFolder, IWebSiteFolder>(shellBuilder);
 
+                        shellBuilder.RegisterType<WorkContextAccessor>().As<IWorkContextAccessor>().InstancePerLifetimeScope();
+
                         if (_registrations.ShellRegistrations != null)
                         {
                             _registrations.ShellRegistrations(shellBuilder);
