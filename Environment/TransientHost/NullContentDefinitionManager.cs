@@ -6,6 +6,10 @@ using Orchard.Environment.Extensions;
 
 namespace Lombiq.OrchardAppHost.Services.TransientHost
 {
+    /// <summary>
+    /// Used in transient hosts to prevent exceptions caused by instantiating the default <see cref="IContentDefinitionManager"/>
+    /// implementation due to transient hosts not having persistence configured.
+    /// </summary>
     [OrchardFeature("Lombiq.OrchardAppHost.TransientHost")]
     public class NullContentDefinitionManager : IContentDefinitionManager
     {

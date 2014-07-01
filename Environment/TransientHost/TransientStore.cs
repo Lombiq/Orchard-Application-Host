@@ -33,6 +33,9 @@ namespace Lombiq.OrchardAppHost.Services.TransientHost
     }
 
 
+    /// <summary>
+    /// A service that stores data for the life time of the Orchard Application Host for a given shell.
+    /// </summary>
     public interface ITransientStore : IHostTransientStore, ISingletonDependency
     {
     }

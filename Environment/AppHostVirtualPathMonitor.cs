@@ -5,7 +5,13 @@ using Orchard.FileSystems.VirtualPath;
 
 namespace Lombiq.OrchardAppHost.Environment
 {
-    // Copied from CommandHostVirtualPathMonitor
+    /// <summary>
+    /// <see cref="IVirtualPathMonitor"/> implementation for the Orchard App Host that doesn't make use of
+    /// <see cref="System.Web.Hosting.HostingEnvironment"/> (since that would just work for web applications).
+    /// </summary>
+    /// <remarks>
+    /// Copied from <see cref="Orchard.Commands.CommandHostVirtualPathMonitor"/> because it's internal.
+    /// </remarks>
     public class AppHostVirtualPathMonitor : IVirtualPathMonitor
     {
         private readonly IVirtualPathProvider _virtualPathProvider;

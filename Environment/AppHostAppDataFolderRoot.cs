@@ -3,6 +3,10 @@ using Orchard.FileSystems.VirtualPath;
 
 namespace Lombiq.OrchardAppHost.Environment
 {
+    /// <summary>
+    /// <see cref="IAppDataFolderRoot"/> implementation for the Orchard App Host that doesn't make use of
+    /// <see cref="System.Web.Hosting.HostingEnvironment"/> (since that would just work for web applications).
+    /// </summary>
     public class AppHostAppDataFolderRoot : IAppDataFolderRoot
     {
         private readonly IVirtualPathProvider _virtualPathProvider;

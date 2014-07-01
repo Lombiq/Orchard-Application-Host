@@ -5,6 +5,10 @@ using Orchard.FileSystems.VirtualPath;
 
 namespace Lombiq.OrchardAppHost.Environment
 {
+    /// <summary>
+    /// <see cref="IVirtualPathProvider"/> implementation for the Orchard App Host that doesn't make use of
+    /// <see cref="System.Web.Hosting.HostingEnvironment"/> (since that would just work for web applications).
+    /// </summary>
     public class AppHostVirtualPathProvider : DefaultVirtualPathProvider, IVirtualPathProvider
     {
         public override string MapPath(string virtualPath)

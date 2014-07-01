@@ -161,13 +161,12 @@ namespace Lombiq.OrchardAppHost
                 }
 
                 hca.Set(httpContext);
-                var logger = scope.Resolve<ILoggerService>();
 
+                var logger = scope.Resolve<ILoggerService>();
                 var orchardHost = scope.Resolve<IOrchardHost>();
+                var previousTenantState = TenantState.Invalid;
 
                 orchardHost.BeginRequest();
-
-                var previousTenantState = TenantState.Invalid;
 
                 try
                 {

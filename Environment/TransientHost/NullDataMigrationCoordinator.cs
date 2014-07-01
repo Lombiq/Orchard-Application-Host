@@ -4,6 +4,10 @@ using Orchard.Environment.Extensions.Models;
 
 namespace Lombiq.OrchardAppHost.Services.TransientHost
 {
+    /// <summary>
+    /// Prevents data migrations from being run during feature state changes for transient hosts, since transient hosts don't have persistence
+    /// configured.
+    /// </summary>
     [OrchardFeature("Lombiq.OrchardAppHost.TransientHost")]
     [OrchardSuppressDependency("Orchard.Data.Migration.DataMigrationCoordinator")]
     public class NullDataMigrationCoordinator : IFeatureEventHandler

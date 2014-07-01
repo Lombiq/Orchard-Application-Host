@@ -2,6 +2,11 @@
 
 namespace Lombiq.OrchardAppHost.Services.TransientHost
 {
+    /// <summary>
+    /// Service for producing a default <see cref="ShellDescriptor"/> to be used from 
+    /// <see cref="Lombiq.OrchardAppHost.Services.TransientHost.TransientShellDescriptorManager"/> when the latter one
+    /// is initialized.
+    /// </summary>
     public interface IDefaultTransientShellDescriptorProvider
     {
         ShellDescriptor GetDefaultShellDescriptor();

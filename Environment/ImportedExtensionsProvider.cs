@@ -11,7 +11,7 @@ using Orchard.FileSystems.VirtualPath;
 namespace Lombiq.OrchardAppHost.Environment
 {
     /// <summary>
-    /// Deals with extensions loaded on the fly when configuring the OrchardAppHost.
+    /// Deals with extensions loaded on the fly when configuring the Orchard App Host.
     /// </summary>
     public class ImportedExtensionsProvider : ExtensionLoaderBase, IExtensionFolders
     {

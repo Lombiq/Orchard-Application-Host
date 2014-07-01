@@ -5,6 +5,10 @@ using Orchard.Environment.Descriptor;
 
 namespace Lombiq.OrchardAppHost.Environment
 {
+    /// <summary>
+    /// When NHibernate session and shell descriptor caches are disabled when configuring the Orchard App Host this module
+    /// applies the configuration to the respective implementations.
+    /// </summary>
     public class ConfigurationCacheDisablingModule : Module
     {
         protected override void AttachToComponentRegistration(IComponentRegistry componentRegistry, IComponentRegistration registration)

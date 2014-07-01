@@ -5,7 +5,8 @@ using Orchard;
 namespace Lombiq.OrchardAppHost
 {
     /// <summary>
-    /// Describes a service for running an Orchard Application Host.
+    /// Describes a service for running an Orchard Application Host. You can use such a host to run code inside the context
+    /// of an Orchard application (and Orchard shells).
     /// </summary>
     public interface IOrchardAppHost : IDisposable
     {

@@ -14,6 +14,11 @@ namespace Lombiq.OrchardAppHost.Environment
     }
 
 
+    /// <summary>
+    /// Service for detecting and registering shell changes so the affected shells can be restarted. This is necessary as 
+    /// <see cref="Orchard.Environment.DefaultOrchardHost"/>' looses shells queued for restart on thread switches (what 
+    /// happens in async code).
+    /// </summary>
     public interface IShellChangeHandler
     {
         IEnumerable<IChangedShellDescriptor> GetChangedShellDescriptors();
