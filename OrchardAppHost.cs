@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -8,16 +9,18 @@ using Autofac;
 using Autofac.Builder;
 using Autofac.Core;
 using Lombiq.OrchardAppHost.Configuration;
-using Lombiq.OrchardAppHost.Services;
 using Lombiq.OrchardAppHost.Environment;
 using Orchard;
 using Orchard.Caching;
 using Orchard.Environment;
 using Orchard.Environment.Configuration;
-using Orchard.Environment.Extensions;
+using Orchard.Environment.Descriptor;
+using Orchard.Environment.Descriptor.Models;
 using Orchard.Environment.Extensions.Folders;
 using Orchard.Environment.Extensions.Loaders;
 using Orchard.Environment.Features;
+using Orchard.Environment.State;
+using Orchard.Events;
 using Orchard.Exceptions;
 using Orchard.FileSystems.AppData;
 using Orchard.FileSystems.Dependencies;
@@ -25,12 +28,6 @@ using Orchard.FileSystems.VirtualPath;
 using Orchard.FileSystems.WebSite;
 using Orchard.Logging;
 using Orchard.Mvc;
-using Orchard.Environment.Descriptor;
-using Orchard.Environment.Descriptor.Models;
-using System.Threading.Tasks;
-using System.Runtime.Remoting.Messaging;
-using Orchard.Environment.State;
-using Orchard.Events;
 
 namespace Lombiq.OrchardAppHost
 {

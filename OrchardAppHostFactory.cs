@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Lombiq.OrchardAppHost.Configuration;
-using Lombiq.OrchardAppHost.Services;
-using Orchard.Environment.Configuration;
 using Autofac;
-using Orchard.Environment.Descriptor.Models;
-using Orchard.Environment.Descriptor;
-using Lombiq.OrchardAppHost.Environment;
-using Orchard.Environment.State;
+using Lombiq.OrchardAppHost.Configuration;
 using Lombiq.OrchardAppHost.Services.TransientHost;
+using Orchard.Environment.Configuration;
+using Orchard.Environment.Descriptor;
+using Orchard.Environment.Descriptor.Models;
+using Orchard.Environment.State;
 
 namespace Lombiq.OrchardAppHost
 {

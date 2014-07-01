@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Web;
-using Autofac;
-using Autofac.Core;
-using Orchard;
 using Orchard.Mvc;
 
 namespace Lombiq.OrchardAppHost.Environment
