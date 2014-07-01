@@ -27,11 +27,17 @@ using Orchard.Logging;
 using Orchard.Mvc;
 using Orchard.Environment.Descriptor;
 using Orchard.Environment.Descriptor.Models;
+using System.Threading.Tasks;
+using System.Runtime.Remoting.Messaging;
+using Orchard.Environment.State;
+using Orchard.Events;
 
 namespace Lombiq.OrchardAppHost
 {
     public class OrchardAppHost : IOrchardAppHost
     {
+        private const string RunScopeTag = "OrchardAppHostRunScope";
+
         private readonly AppHostSettings _settings;
         private readonly AppHostRegistrations _registrations;
         private IContainer _hostContainer = null;
@@ -55,7 +61,7 @@ namespace Lombiq.OrchardAppHost
         }
 
 
-        public void Startup()
+        public async Task Startup()
         {
             // Trying to load not found assemblies from the Dependencies folder. This is instead of the assemblyBinding config
             // in Orchard's Web.config.
@@ -92,34 +98,47 @@ namespace Lombiq.OrchardAppHost
             {
                 foreach (var defaultShellFeatureState in _settings.DefaultShellFeatureStates)
                 {
-                    Run(scope =>
-                    {
-                        // Don't run on e.g. the setup shell.
-                        if (scope.Resolve<ShellSettings>().State != TenantState.Running) return;
+                    await Run(scope => Task.Run(() =>
+                        {
+                            // Don't run on e.g. the setup shell.
+                            if (scope.Resolve<ShellSettings>().State != TenantState.Running) return;
 
-                        // Pre-enabling features to load them early, so they will work even if e.g. they override an
-                        // IFeatureEventHandler implementation.
-                        var shellDescriptorManager = scope.Resolve<IShellDescriptorManager>();
-                        var shellDescriptor = shellDescriptorManager.GetShellDescriptor();
-                        shellDescriptor.Features.Union(defaultShellFeatureState.EnabledFeatures.Select(feature => new ShellFeature { Name = feature }));
-                        shellDescriptorManager.UpdateShellDescriptor(shellDescriptor.SerialNumber, shellDescriptor.Features, shellDescriptor.Parameters);
+                            // Pre-enabling features to load them early, so they will work even if e.g. they override an
+                            // IFeatureEventHandler implementation.
+                            var shellDescriptorManager = scope.Resolve<IShellDescriptorManager>();
+                            var shellDescriptor = shellDescriptorManager.GetShellDescriptor();
+                            shellDescriptor.Features = shellDescriptor.Features.Union(defaultShellFeatureState.EnabledFeatures.Select(feature => new ShellFeature { Name = feature }));
+                            shellDescriptorManager.UpdateShellDescriptor(shellDescriptor.SerialNumber, shellDescriptor.Features, shellDescriptor.Parameters);
 
-                        scope.Resolve<IFeatureManager>().EnableFeatures(defaultShellFeatureState.EnabledFeatures);
-                    },
-                    defaultShellFeatureState.ShellName);
+                            scope.Resolve<IFeatureManager>().EnableFeatures(defaultShellFeatureState.EnabledFeatures);
+                        }), defaultShellFeatureState.ShellName);
                 }
             }
         }
 
-        public void Run(Action<IWorkContextScope> process, string shellName)
+        public async Task Run(Func<IWorkContextScope, Task> process, string shellName)
         {
             var shellContext = _hostContainer.Resolve<IOrchardHost>().GetShellContext(new ShellSettings { Name = shellName });
             // We need a single HCA, and thus the same HttpContext throughout this scope to carry the work context. Especially
             // important for async code, see: https://orchard.codeplex.com/workitem/20509
             // Using InstancePerLifetimeScope() inside the shell ContinerBuilder still yields multiple instantiations.
             var hca = new AppHostHttpContextAccessor();
-            using (var scope = shellContext.LifetimeScope.BeginLifetimeScope(builder =>
-                            builder.RegisterInstance(hca).As<IHttpContextAccessor>()))
+            using (var scope = shellContext.LifetimeScope.BeginLifetimeScope(
+                RunScopeTag,
+                builder =>
+                {
+                    builder.RegisterInstance(hca).As<IHttpContextAccessor>();
+                    builder.RegisterType<ProcessingEngineTaskAddedHandler>()
+                        .As<IProcessingEngine>()
+                        .As<IProcessingEngineTaskAddedHandler>()
+                        .SingleInstance();
+                    builder.RegisterType<ShellChangeHandler>()
+                        .As<IShellChangeHandler>()
+                        .As<IEventHandler>()
+                        .Named<IEventHandler>(typeof(IShellDescriptorManagerEventHandler).Name)
+                        .Named<IEventHandler>(typeof(IShellSettingsManagerEventHandler).Name)
+                        .SingleInstance();
+                }))
             {
                 HttpContextBase httpContext;
 
@@ -143,25 +162,58 @@ namespace Lombiq.OrchardAppHost
                 }
 
                 hca.Set(httpContext);
+                var logger = scope.Resolve<ILoggerService>();
 
-                using (var workContext = scope.Resolve<IWorkContextAccessor>().CreateWorkContextScope(httpContext))
+                var orchardHost = scope.Resolve<IOrchardHost>();
+                
+                orchardHost.BeginRequest();
+
+                try
                 {
-                    try
+                    using (var workContext = scope.CreateWorkContextScope(httpContext))
                     {
-                        process(workContext);
-                    }
-                    catch (Exception ex)
-                    {
-                        if (ex.IsFatal()) throw;
+                        try
+                        {
+                            await process(workContext);
+                        }
+                        catch (Exception ex)
+                        {
+                            if (ex.IsFatal()) throw;
 
-                        scope.Resolve<ILoggerService>().Error(ex, "Error when executing work inside Orchard App Host.");
-                        throw;
+                            logger.Error(ex, "Error when executing work inside Orchard App Host.");
+                            throw;
+                        }
+
                     }
                 }
+                finally
+                {
+                    // Due to possibly await-ed calls in the process we keep track of everything that uses is stored in ContextState<T> normally.
+                    // This is needed because ContextState<T> looses state on thread switch.
+                    // Here we re-apply every change so the necessary services will get to know everything.
+                    var shellChangeHandler = scope.Resolve<IShellChangeHandler>();
+                    var shellDescriptorManagerEventHandler = _hostContainer.Resolve<IShellDescriptorManagerEventHandler>();
+                    foreach (var changedShellDescriptor in shellChangeHandler.GetChangedShellDescriptors())
+                    {
+                        shellDescriptorManagerEventHandler.Changed(changedShellDescriptor.ShellDescriptor, changedShellDescriptor.TenantName);
+                    }
+                    var shellSettingManagerEventHandler = _hostContainer.Resolve<IShellSettingsManagerEventHandler>();
+                    foreach (var changedShellSettings in shellChangeHandler.GetChangedShellSettings())
+                    {
+                        shellSettingManagerEventHandler.Saved(changedShellSettings);
+                    }
 
-                // Either this or running tasks through IProcessingEngine as below. EndRequest() also restarts updated shells but
-                // can have unwanted side effects in the future.
-                _hostContainer.Resolve<IOrchardHost>().EndRequest();
+                    var processingEngine = _hostContainer.Resolve<IProcessingEngine>();
+                    var processingEngineTaskAddedHandler = scope.Resolve<IProcessingEngineTaskAddedHandler>();
+                    foreach (var task in processingEngineTaskAddedHandler.GetAddedTasks())
+                    {
+                        processingEngine.AddTask(task.ShellSettings, task.ShellDescriptor, task.MessageName, task.Parameters);
+                    }
+
+                    // Either this or running tasks through IProcessingEngine and restarting shells manually.
+                    // EndRequest() have unwanted side effects in the future.
+                    orchardHost.EndRequest();
+                }
             }
         }
 
@@ -200,6 +252,7 @@ namespace Lombiq.OrchardAppHost
                         RegisterVolatileProviderForShell<AppHostVirtualPathProvider, IVirtualPathProvider>(shellBuilder);
                         RegisterVolatileProviderForShell<AppHostWebSiteFolder, IWebSiteFolder>(shellBuilder);
 
+                        // Needed so it gets the AppHostHttpContextAccessor instance registered in Run().
                         shellBuilder.RegisterType<WorkContextAccessor>().As<IWorkContextAccessor>().InstancePerLifetimeScope();
 
                         if (_registrations.ShellRegistrations != null)
@@ -247,7 +300,8 @@ namespace Lombiq.OrchardAppHost
                 builder.Register(ctx => ModelBinders.Binders).SingleInstance();
                 builder.Register(ctx => ViewEngines.Engines).SingleInstance();
 
-                builder.RegisterType<OrchardLog4netFactory>().As<Castle.Core.Logging.ILoggerFactory>().InstancePerLifetimeScope();
+                //builder.RegisterType<OrchardLog4netFactory>().As<Castle.Core.Logging.ILoggerFactory>().InstancePerLifetimeScope();
+                builder.RegisterType<LoggerService>().As<ILoggerService>().SingleInstance();
 
                 if (_registrations.HostRegistrations != null)
                 {

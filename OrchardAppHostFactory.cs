@@ -20,7 +20,7 @@ namespace Lombiq.OrchardAppHost
         /// <summary>
         /// Creates and starts an App Host.
         /// </summary>
-        public static IOrchardAppHost StartHost()
+        public static Task<IOrchardAppHost> StartHost()
         {
             return StartHost(null, null);
         }
@@ -29,7 +29,7 @@ namespace Lombiq.OrchardAppHost
         /// Creates and starts an App Host.
         /// </summary>
         /// <param name="settings">Settings for the App Host.</param>
-        public static IOrchardAppHost StartHost(AppHostSettings settings)
+        public static Task<IOrchardAppHost> StartHost(AppHostSettings settings)
         {
             return StartHost(settings, null);
         }
@@ -39,10 +39,10 @@ namespace Lombiq.OrchardAppHost
         /// </summary>
         /// <param name="settings">Settings for the App Host.</param>
         /// <param name="registrations">Dependency registrations for the App Host.</param>
-        public static IOrchardAppHost StartHost(AppHostSettings settings, AppHostRegistrations registrations)
+        public static async Task<IOrchardAppHost> StartHost(AppHostSettings settings, AppHostRegistrations registrations)
         {
             var host = new OrchardAppHost(settings, registrations);
-            host.Startup();
+            await host.Startup();
             return host;
         }
 
@@ -52,7 +52,7 @@ namespace Lombiq.OrchardAppHost
         /// <param name="settings">Settings for the App Host.</param>
         /// <param name="registrations">Dependency registrations for the App Host.</param>
         /// <param name="enabledStartupFeatures">Names of features to enable already when the shell starts.</param>
-        public static IOrchardAppHost StartTransientHost(AppHostSettings settings, AppHostRegistrations registrations, IEnumerable<ShellFeature> enabledStartupFeatures)
+        public static Task<IOrchardAppHost> StartTransientHost(AppHostSettings settings, AppHostRegistrations registrations, IEnumerable<ShellFeature> enabledStartupFeatures)
         {
             if (registrations == null) registrations = new AppHostRegistrations();
 

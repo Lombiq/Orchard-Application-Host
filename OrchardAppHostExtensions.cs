@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Orchard;
 using Orchard.Data;
 using Orchard.Environment.Configuration;
@@ -7,25 +8,25 @@ namespace Lombiq.OrchardAppHost
 {
     public static class OrchardAppHostExtensions
     {
-        public static void Run(this IOrchardAppHost appHost, Action<IWorkContextScope> process)
+        public static Task Run(this IOrchardAppHost appHost, Func<IWorkContextScope, Task> process)
         {
-            appHost.Run(process, ShellSettings.DefaultName);
+            return appHost.Run(process, ShellSettings.DefaultName);
         }
 
-        public static void RunInTransaction(this IOrchardAppHost appHost, Action<IWorkContextScope> process)
+        public static Task RunInTransaction(this IOrchardAppHost appHost, Func<IWorkContextScope, Task> process)
         {
-            appHost.RunInTransaction(process, ShellSettings.DefaultName);
+            return appHost.RunInTransaction(process, ShellSettings.DefaultName);
         }
 
-        public static void RunInTransaction(this IOrchardAppHost appHost, Action<IWorkContextScope> process, string shellName)
+        public static Task RunInTransaction(this IOrchardAppHost appHost, Func<IWorkContextScope, Task> process, string shellName)
         {
-            appHost.Run(scope =>
+            return appHost.Run(async scope =>
                 {
                     var transactionManager = scope.Resolve<ITransactionManager>();
                     transactionManager.Demand();
                     try
                     {
-                        process(scope);
+                        await process(scope);
                     }
                     catch (Exception)
                     {
@@ -35,46 +36,46 @@ namespace Lombiq.OrchardAppHost
                 }, shellName);
         }
 
-        public static void Run<TService>(this IOrchardAppHost appHost, Action<TService> process, string shellName = ShellSettings.DefaultName, bool wrapInTransaction = true)
+        public static Task Run<TService>(this IOrchardAppHost appHost, Func<TService, Task> process, string shellName = ShellSettings.DefaultName, bool wrapInTransaction = true)
         {
-            appHost.Run(scope => process(scope.Resolve<TService>()), shellName, wrapInTransaction);
+            return appHost.Run(scope => process(scope.Resolve<TService>()), shellName, wrapInTransaction);
         }
 
-        public static void Run<TService1, TService2>(this IOrchardAppHost appHost, Action<TService1, TService2> process, string shellName = ShellSettings.DefaultName, bool wrapInTransaction = true)
+        public static Task Run<TService1, TService2>(this IOrchardAppHost appHost, Func<TService1, TService2, Task> process, string shellName = ShellSettings.DefaultName, bool wrapInTransaction = true)
         {
-            appHost.Run(scope => process(scope.Resolve<TService1>(), scope.Resolve<TService2>()), shellName, wrapInTransaction);
+            return appHost.Run(scope => process(scope.Resolve<TService1>(), scope.Resolve<TService2>()), shellName, wrapInTransaction);
         }
 
-        public static void Run<TService1, TService2, TService3>(this IOrchardAppHost appHost, Action<TService1, TService2, TService3> process, string shellName = ShellSettings.DefaultName, bool wrapInTransaction = true)
+        public static Task Run<TService1, TService2, TService3>(this IOrchardAppHost appHost, Func<TService1, TService2, TService3, Task> process, string shellName = ShellSettings.DefaultName, bool wrapInTransaction = true)
         {
-            appHost.Run(scope => process(scope.Resolve<TService1>(), scope.Resolve<TService2>(), scope.Resolve<TService3>()), shellName, wrapInTransaction);
+            return appHost.Run(scope => process(scope.Resolve<TService1>(), scope.Resolve<TService2>(), scope.Resolve<TService3>()), shellName, wrapInTransaction);
         }
 
-        public static void Run<TService1, TService2, TService3, TService4>(this IOrchardAppHost appHost, Action<TService1, TService2, TService3, TService4> process, string shellName = ShellSettings.DefaultName, bool wrapInTransaction = true)
+        public static Task Run<TService1, TService2, TService3, TService4>(this IOrchardAppHost appHost, Func<TService1, TService2, TService3, TService4, Task> process, string shellName = ShellSettings.DefaultName, bool wrapInTransaction = true)
         {
-            appHost.Run(scope => process(scope.Resolve<TService1>(), scope.Resolve<TService2>(), scope.Resolve<TService3>(), scope.Resolve<TService4>()), shellName, wrapInTransaction);
+            return appHost.Run(scope => process(scope.Resolve<TService1>(), scope.Resolve<TService2>(), scope.Resolve<TService3>(), scope.Resolve<TService4>()), shellName, wrapInTransaction);
         }
 
-        public static void Run<TService1, TService2, TService3, TService4, TService5>(this IOrchardAppHost appHost, Action<TService1, TService2, TService3, TService4, TService5> process, string shellName = ShellSettings.DefaultName, bool wrapInTransaction = true)
+        public static Task Run<TService1, TService2, TService3, TService4, TService5>(this IOrchardAppHost appHost, Func<TService1, TService2, TService3, TService4, TService5, Task> process, string shellName = ShellSettings.DefaultName, bool wrapInTransaction = true)
         {
-            appHost.Run(scope => process(scope.Resolve<TService1>(), scope.Resolve<TService2>(), scope.Resolve<TService3>(), scope.Resolve<TService4>(), scope.Resolve<TService5>()), shellName, wrapInTransaction);
+            return appHost.Run(scope => process(scope.Resolve<TService1>(), scope.Resolve<TService2>(), scope.Resolve<TService3>(), scope.Resolve<TService4>(), scope.Resolve<TService5>()), shellName, wrapInTransaction);
         }
 
-        public static void Run<TService1, TService2, TService3, TService4, TService5, TService6>(this IOrchardAppHost appHost, Action<TService1, TService2, TService3, TService4, TService5, TService6> process, string shellName = ShellSettings.DefaultName, bool wrapInTransaction = true)
+        public static Task Run<TService1, TService2, TService3, TService4, TService5, TService6>(this IOrchardAppHost appHost, Func<TService1, TService2, TService3, TService4, TService5, TService6, Task> process, string shellName = ShellSettings.DefaultName, bool wrapInTransaction = true)
         {
-            appHost.Run(scope => process(scope.Resolve<TService1>(), scope.Resolve<TService2>(), scope.Resolve<TService3>(), scope.Resolve<TService4>(), scope.Resolve<TService5>(), scope.Resolve<TService6>()), shellName, wrapInTransaction);
+            return appHost.Run(scope => process(scope.Resolve<TService1>(), scope.Resolve<TService2>(), scope.Resolve<TService3>(), scope.Resolve<TService4>(), scope.Resolve<TService5>(), scope.Resolve<TService6>()), shellName, wrapInTransaction);
         }
 
-        public static void Run<TService1, TService2, TService3, TService4, TService5, TService6, TService7>(this IOrchardAppHost appHost, Action<TService1, TService2, TService3, TService4, TService5, TService6, TService7> process, string shellName = ShellSettings.DefaultName, bool wrapInTransaction = true)
+        public static Task Run<TService1, TService2, TService3, TService4, TService5, TService6, TService7>(this IOrchardAppHost appHost, Func<TService1, TService2, TService3, TService4, TService5, TService6, TService7, Task> process, string shellName = ShellSettings.DefaultName, bool wrapInTransaction = true)
         {
-            appHost.Run(scope => process(scope.Resolve<TService1>(), scope.Resolve<TService2>(), scope.Resolve<TService3>(), scope.Resolve<TService4>(), scope.Resolve<TService5>(), scope.Resolve<TService6>(), scope.Resolve<TService7>()), shellName, wrapInTransaction);
+            return appHost.Run(scope => process(scope.Resolve<TService1>(), scope.Resolve<TService2>(), scope.Resolve<TService3>(), scope.Resolve<TService4>(), scope.Resolve<TService5>(), scope.Resolve<TService6>(), scope.Resolve<TService7>()), shellName, wrapInTransaction);
         }
 
 
-        private static void Run(this IOrchardAppHost appHost, Action<IWorkContextScope> process, string shellName, bool wrapInTransaction)
+        private static Task Run(this IOrchardAppHost appHost, Func<IWorkContextScope, Task> process, string shellName, bool wrapInTransaction)
         {
-            if (wrapInTransaction) appHost.RunInTransaction(process, shellName);
-            else appHost.Run(process, shellName);
+            if (wrapInTransaction) return appHost.RunInTransaction(process, shellName);
+            else return appHost.Run(process, shellName);
         }
     }
 }

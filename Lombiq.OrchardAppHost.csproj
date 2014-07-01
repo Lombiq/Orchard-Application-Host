@@ -61,6 +61,8 @@
   <ItemGroup>
     <Compile Include="Configuration\AppHostRegistrations.cs" />
     <Compile Include="Configuration\AppHostSettings.cs" />
+    <Compile Include="Environment\ProcessingEngineTaskAddedHandler.cs" />
+    <Compile Include="Environment\ShellChangeHandler.cs" />
     <Compile Include="Extensions\AssemblyExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="IOrchardAppHost.cs" />

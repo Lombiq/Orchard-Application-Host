@@ -6,7 +6,7 @@ namespace Orchard.Logging
     /// Provides logging services.
     /// </summary>
     /// <remarks>The sole purpose of this is to provide a way to be able to resolve an ILogger.</remarks>
-    public interface ILoggerService : ILogger, ISingletonDependency
+    public interface ILoggerService : ILogger
     {
     }
 
