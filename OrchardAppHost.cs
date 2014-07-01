@@ -125,6 +125,8 @@ namespace Lombiq.OrchardAppHost
                 builder =>
                 {
                     builder.RegisterInstance(hca).As<IHttpContextAccessor>();
+                    // Needed so it gets the AppHostHttpContextAccessor instance registered in Run().
+                    builder.RegisterType<WorkContextAccessor>().As<IWorkContextAccessor>().SingleInstance();
                     builder.RegisterType<ProcessingEngineTaskAddedHandler>()
                         .As<IProcessingEngine>()
                         .As<IProcessingEngineTaskAddedHandler>()
@@ -248,9 +250,6 @@ namespace Lombiq.OrchardAppHost
                         RegisterVolatileProviderForShell<AppHostVirtualPathMonitor, IVirtualPathMonitor>(shellBuilder);
                         RegisterVolatileProviderForShell<AppHostVirtualPathProvider, IVirtualPathProvider>(shellBuilder);
                         RegisterVolatileProviderForShell<AppHostWebSiteFolder, IWebSiteFolder>(shellBuilder);
-
-                        // Needed so it gets the AppHostHttpContextAccessor instance registered in Run().
-                        shellBuilder.RegisterType<WorkContextAccessor>().As<IWorkContextAccessor>().InstancePerLifetimeScope();
 
                         if (_registrations.ShellRegistrations != null)
                         {
