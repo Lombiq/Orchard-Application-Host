@@ -164,8 +164,10 @@ namespace Lombiq.OrchardAppHost
                 var logger = scope.Resolve<ILoggerService>();
 
                 var orchardHost = scope.Resolve<IOrchardHost>();
-                
+
                 orchardHost.BeginRequest();
+
+                var previousTenantState = TenantState.Invalid;
 
                 try
                 {
@@ -174,6 +176,7 @@ namespace Lombiq.OrchardAppHost
                         try
                         {
                             await process(workContext);
+                            previousTenantState = workContext.Resolve<ShellSettings>().State;
                         }
                         catch (Exception ex)
                         {
@@ -182,31 +185,41 @@ namespace Lombiq.OrchardAppHost
                             logger.Error(ex, "Error when executing work inside Orchard App Host.");
                             throw;
                         }
-
                     }
                 }
                 finally
                 {
-                    // Due to possibly await-ed calls in the process we keep track of everything that uses is stored in ContextState<T> normally.
-                    // This is needed because ContextState<T> looses state on thread switch.
-                    // Here we re-apply every change so the necessary services will get to know everything.
-                    var shellChangeHandler = scope.Resolve<IShellChangeHandler>();
-                    var shellDescriptorManagerEventHandler = _hostContainer.Resolve<IShellDescriptorManagerEventHandler>();
-                    foreach (var changedShellDescriptor in shellChangeHandler.GetChangedShellDescriptors())
-                    {
-                        shellDescriptorManagerEventHandler.Changed(changedShellDescriptor.ShellDescriptor, changedShellDescriptor.TenantName);
-                    }
                     var shellSettingManagerEventHandler = _hostContainer.Resolve<IShellSettingsManagerEventHandler>();
-                    foreach (var changedShellSettings in shellChangeHandler.GetChangedShellSettings())
-                    {
-                        shellSettingManagerEventHandler.Saved(changedShellSettings);
-                    }
+                    var shellSettings = scope.Resolve<IShellSettingsManager>().LoadSettings().SingleOrDefault(settings => settings.Name == shellName);
 
-                    var processingEngine = _hostContainer.Resolve<IProcessingEngine>();
-                    var processingEngineTaskAddedHandler = scope.Resolve<IProcessingEngineTaskAddedHandler>();
-                    foreach (var task in processingEngineTaskAddedHandler.GetAddedTasks())
+                    // This means that setup just run. During setup the shell-tracking services are not registered.
+                    if (previousTenantState == TenantState.Invalid && shellSettings != null && shellSettings.State == TenantState.Running)
                     {
-                        processingEngine.AddTask(task.ShellSettings, task.ShellDescriptor, task.MessageName, task.Parameters);
+                        shellSettingManagerEventHandler.Saved(shellSettings);
+                    }
+                    else
+                    {
+                        // Due to possibly await-ed calls in the process we keep track of everything that uses is stored in ContextState<T> normally.
+                        // This is needed because ContextState<T> looses state on thread switch.
+                        // Here we re-apply every change so the necessary services will get to know everything.
+                        var shellChangeHandler = scope.Resolve<IShellChangeHandler>();
+                        var shellDescriptorManagerEventHandler = _hostContainer.Resolve<IShellDescriptorManagerEventHandler>();
+                        foreach (var changedShellDescriptor in shellChangeHandler.GetChangedShellDescriptors())
+                        {
+                            shellDescriptorManagerEventHandler.Changed(changedShellDescriptor.ShellDescriptor, changedShellDescriptor.TenantName);
+                        }
+                        
+                        foreach (var changedShellSettings in shellChangeHandler.GetChangedShellSettings())
+                        {
+                            shellSettingManagerEventHandler.Saved(changedShellSettings);
+                        }
+
+                        var processingEngine = _hostContainer.Resolve<IProcessingEngine>();
+                        var processingEngineTaskAddedHandler = scope.Resolve<IProcessingEngineTaskAddedHandler>();
+                        foreach (var task in processingEngineTaskAddedHandler.GetAddedTasks())
+                        {
+                            processingEngine.AddTask(task.ShellSettings, task.ShellDescriptor, task.MessageName, task.Parameters);
+                        }
                     }
 
                     // Either this or running tasks through IProcessingEngine and restarting shells manually.
