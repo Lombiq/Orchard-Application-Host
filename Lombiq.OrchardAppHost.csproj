@@ -41,6 +41,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\nhibernate\FluentNHibernate.dll</HintPath>
     </Reference>
+    <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\log4net\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="NHibernate, Version=3.3.1.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\nhibernate\NHibernate.dll</HintPath>
@@ -69,6 +73,7 @@
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="HostContainerFactory.cs" />
     <Compile Include="IOrchardAppHost.cs" />
+    <Compile Include="Log4NetConfigurator.cs" />
     <Compile Include="OrchardAppHostExtensions.cs" />
     <Compile Include="OrchardAppHostFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

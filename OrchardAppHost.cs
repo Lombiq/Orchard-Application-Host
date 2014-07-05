@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -86,6 +87,7 @@ namespace Lombiq.OrchardAppHost
                 if (!string.IsNullOrEmpty(path)) return Assembly.LoadFile(path);
                 return null;
             };
+            
 
             // Automatically importing OrchardAppHost assemblies.
             if (_settings.ImportedExtensions == null) _settings.ImportedExtensions = Enumerable.Empty<Assembly>();
@@ -105,9 +107,14 @@ namespace Lombiq.OrchardAppHost
                 featureState.EnabledFeatures = featureState.EnabledFeatures.Union(new[] { "Lombiq.OrchardAppHost" });
             }
 
+
             _hostContainer = HostContainerFactory.CreateHostContainer(this, _settings, _registrations);
 
+            var virtualPathProvider = _hostContainer.Resolve<IVirtualPathProvider>();
+            Log4NetConfigurator.Configure(virtualPathProvider.MapPath(virtualPathProvider.Combine(_settings.AppDataFolderPath, "Logs")));
+
             _hostContainer.Resolve<IOrchardHost>().Initialize();
+
 
             if (_settings.DefaultShellFeatureStates != null && _settings.DefaultShellFeatureStates.Any())
             {
