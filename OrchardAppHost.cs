@@ -230,6 +230,8 @@ namespace Lombiq.OrchardAppHost
 
         public void Dispose()
         {
+            // If this is implemented we should also terminate the Orchard host here: https://orchard.codeplex.com/workitem/20791
+
             if (_hostContainer != null)
             {
                 _hostContainer.Dispose();
@@ -241,12 +243,8 @@ namespace Lombiq.OrchardAppHost
         {
             return OrchardStarter.CreateHostContainer(builder =>
             {
-                builder.RegisterType<AppHostEnvironment>().As<IHostEnvironment>().SingleInstance();
-                var appDataRootRegistration = builder.RegisterType<AppHostAppDataFolderRoot>().As<IAppDataFolderRoot>().SingleInstance();
-                if (!string.IsNullOrEmpty(_settings.AppDataFolderPath))
-                {
-                    appDataRootRegistration.WithParameter(new NamedParameter("rootPath", _settings.AppDataFolderPath));
-                }
+                // Needed also for shells, separately.
+                RegisterAppDataFolderRoot(builder).SingleInstance();
 
                 RegisterVolatileProvider<AppHostVirtualPathMonitor, IVirtualPathMonitor>(builder);
                 RegisterVolatileProvider<AppHostVirtualPathProvider, IVirtualPathProvider>(builder);
@@ -257,7 +255,8 @@ namespace Lombiq.OrchardAppHost
                     Registrations = shellBuilder =>
                     {
                         // Despite imported assemblies being handled these registrations are necessary, because they are needed too early.
-                        shellBuilder.RegisterType<AppHostAppDataFolderRoot>().As<IAppDataFolderRoot>().InstancePerMatchingLifetimeScope("shell");
+
+                        RegisterAppDataFolderRoot(shellBuilder).InstancePerMatchingLifetimeScope("shell");
 
                         RegisterVolatileProviderForShell<AppHostVirtualPathMonitor, IVirtualPathMonitor>(shellBuilder);
                         RegisterVolatileProviderForShell<AppHostVirtualPathProvider, IVirtualPathProvider>(shellBuilder);
@@ -311,11 +310,23 @@ namespace Lombiq.OrchardAppHost
                 //builder.RegisterType<OrchardLog4netFactory>().As<Castle.Core.Logging.ILoggerFactory>().InstancePerLifetimeScope();
                 builder.RegisterType<LoggerService>().As<ILoggerService>().SingleInstance();
 
+                builder.RegisterInstance(this).As<IOrchardAppHost>();
+
                 if (_registrations.HostRegistrations != null)
                 {
                     _registrations.HostRegistrations(builder);
                 }
             });
+        }
+
+        private IRegistrationBuilder<AppHostAppDataFolderRoot, ConcreteReflectionActivatorData, SingleRegistrationStyle> RegisterAppDataFolderRoot(ContainerBuilder builder)
+        {
+            var appDataRootRegistration = builder.RegisterType<AppHostAppDataFolderRoot>().As<IAppDataFolderRoot>();
+            if (!string.IsNullOrEmpty(_settings.AppDataFolderPath))
+            {
+                appDataRootRegistration.WithParameter(new NamedParameter("rootPath", _settings.AppDataFolderPath));
+            }
+            return appDataRootRegistration;
         }
 
 
