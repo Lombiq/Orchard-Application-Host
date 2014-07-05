@@ -87,6 +87,24 @@ namespace Lombiq.OrchardAppHost
                 return null;
             };
 
+            // Automatically importing OrchardAppHost assemblies.
+            if (_settings.ImportedExtensions == null) _settings.ImportedExtensions = Enumerable.Empty<Assembly>();
+            _settings.ImportedExtensions = _settings.ImportedExtensions.Union(new[] { this.GetType().Assembly });
+
+            // Automatically enabling OrchardAppHost root feature to register common dependencies.
+            if (_settings.DefaultShellFeatureStates == null) _settings.DefaultShellFeatureStates = Enumerable.Empty<DefaultShellFeatureState>();
+            if (!_settings.DefaultShellFeatureStates.Any(state => state.ShellName == ShellSettings.DefaultName))
+            {
+                _settings.DefaultShellFeatureStates = _settings.DefaultShellFeatureStates.Union(new[]
+                {
+                    new DefaultShellFeatureState { ShellName = ShellSettings.DefaultName }
+                });
+            }
+            foreach (var featureState in _settings.DefaultShellFeatureStates)
+            {
+                featureState.EnabledFeatures = featureState.EnabledFeatures.Union(new[] { "Lombiq.OrchardAppHost" });
+            }
+
             _hostContainer = CreateHostContainer();
 
             _hostContainer.Resolve<IOrchardHost>().Initialize();
@@ -207,7 +225,7 @@ namespace Lombiq.OrchardAppHost
                         {
                             shellDescriptorManagerEventHandler.Changed(changedShellDescriptor.ShellDescriptor, changedShellDescriptor.TenantName);
                         }
-                        
+
                         foreach (var changedShellSettings in shellChangeHandler.GetChangedShellSettings())
                         {
                             shellSettingManagerEventHandler.Saved(changedShellSettings);
@@ -307,7 +325,6 @@ namespace Lombiq.OrchardAppHost
                 builder.Register(ctx => ModelBinders.Binders).SingleInstance();
                 builder.Register(ctx => ViewEngines.Engines).SingleInstance();
 
-                //builder.RegisterType<OrchardLog4netFactory>().As<Castle.Core.Logging.ILoggerFactory>().InstancePerLifetimeScope();
                 builder.RegisterType<LoggerService>().As<ILoggerService>().SingleInstance();
 
                 builder.RegisterInstance(this).As<IOrchardAppHost>();
