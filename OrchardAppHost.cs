@@ -105,7 +105,7 @@ namespace Lombiq.OrchardAppHost
                 featureState.EnabledFeatures = featureState.EnabledFeatures.Union(new[] { "Lombiq.OrchardAppHost" });
             }
 
-            _hostContainer = CreateHostContainer();
+            _hostContainer = HostContainerFactory.CreateHostContainer(this, _settings, _registrations);
 
             _hostContainer.Resolve<IOrchardHost>().Initialize();
 
@@ -255,116 +255,6 @@ namespace Lombiq.OrchardAppHost
                 _hostContainer.Dispose();
                 _hostContainer = null;
             }
-        }
-
-        private IContainer CreateHostContainer()
-        {
-            return OrchardStarter.CreateHostContainer(builder =>
-            {
-                // Needed also for shells, separately.
-                RegisterAppDataFolderRoot(builder).SingleInstance();
-
-                RegisterVolatileProvider<AppHostVirtualPathMonitor, IVirtualPathMonitor>(builder);
-                RegisterVolatileProvider<AppHostVirtualPathProvider, IVirtualPathProvider>(builder);
-                RegisterVolatileProvider<AppHostWebSiteFolder, IWebSiteFolder>(builder);
-
-                var shellRegistrations = new ShellContainerRegistrations
-                {
-                    Registrations = shellBuilder =>
-                    {
-                        // Despite imported assemblies being handled these registrations are necessary, because they are needed too early.
-
-                        RegisterAppDataFolderRoot(shellBuilder).InstancePerMatchingLifetimeScope("shell");
-
-                        RegisterVolatileProviderForShell<AppHostVirtualPathMonitor, IVirtualPathMonitor>(shellBuilder);
-                        RegisterVolatileProviderForShell<AppHostVirtualPathProvider, IVirtualPathProvider>(shellBuilder);
-                        RegisterVolatileProviderForShell<AppHostWebSiteFolder, IWebSiteFolder>(shellBuilder);
-
-                        if (_registrations.ShellRegistrations != null)
-                        {
-                            _registrations.ShellRegistrations(shellBuilder);
-                        }
-                    }
-                };
-                builder.RegisterInstance(shellRegistrations).As<IShellContainerRegistrations>();
-
-                // Extension folders should be configured.
-                if (_settings.ModuleFolderPaths != null && _settings.ModuleFolderPaths.Any())
-                {
-                    builder.RegisterType<ModuleFolders>().As<IExtensionFolders>().SingleInstance()
-                        .WithParameter(new NamedParameter("paths", _settings.ModuleFolderPaths));
-                }
-                if (_settings.CoreModuleFolderPaths != null && _settings.CoreModuleFolderPaths.Any())
-                {
-                    builder.RegisterType<CoreModuleFolders>().As<IExtensionFolders>().SingleInstance()
-                        .WithParameter(new NamedParameter("paths", _settings.CoreModuleFolderPaths));
-                }
-                if (_settings.ThemeFolderPaths != null && _settings.ThemeFolderPaths.Any())
-                {
-                    builder.RegisterType<ThemeFolders>().As<IExtensionFolders>().SingleInstance()
-                        .WithParameter(new NamedParameter("paths", _settings.ThemeFolderPaths));
-                }
-
-                // Handling imported assemblies.
-                if (_settings.ImportedExtensions != null && _settings.ImportedExtensions.Any())
-                {
-                    builder.RegisterType<ImportedExtensionsProvider>().As<IExtensionFolders, IExtensionLoader>().SingleInstance()
-                        .WithParameter(new NamedParameter("extensions", _settings.ImportedExtensions));
-                }
-
-                if (_settings.DisableConfiguratonCaches)
-                {
-                    builder.RegisterModule<ConfigurationCacheDisablingModule>();
-                }
-
-                builder.RegisterType<AppHostCoreExtensionLoader>().As<IExtensionLoader>().SingleInstance();
-                builder.RegisterType<AppHostRawThemeExtensionLoader>().As<IExtensionLoader>().SingleInstance();
-
-                // Either we register MVC singletons or we need at least a new IOrchardShell implementation.
-                builder.Register(ctx => RouteTable.Routes).SingleInstance();
-                builder.Register(ctx => ModelBinders.Binders).SingleInstance();
-                builder.Register(ctx => ViewEngines.Engines).SingleInstance();
-
-                builder.RegisterType<LoggerService>().As<ILoggerService>().SingleInstance();
-
-                builder.RegisterInstance(this).As<IOrchardAppHost>();
-
-                if (_registrations.HostRegistrations != null)
-                {
-                    _registrations.HostRegistrations(builder);
-                }
-            });
-        }
-
-        private IRegistrationBuilder<AppHostAppDataFolderRoot, ConcreteReflectionActivatorData, SingleRegistrationStyle> RegisterAppDataFolderRoot(ContainerBuilder builder)
-        {
-            var appDataRootRegistration = builder.RegisterType<AppHostAppDataFolderRoot>().As<IAppDataFolderRoot>();
-            if (!string.IsNullOrEmpty(_settings.AppDataFolderPath))
-            {
-                appDataRootRegistration.WithParameter(new NamedParameter("rootPath", _settings.AppDataFolderPath));
-            }
-            return appDataRootRegistration;
-        }
-
-
-        private static IRegistrationBuilder<TRegister, ConcreteReflectionActivatorData, SingleRegistrationStyle> RegisterVolatileProvider<TRegister, TService>(ContainerBuilder builder)
-            where TService : IVolatileProvider
-        {
-            return builder.RegisterType<TRegister>()
-                .As<TService, IVolatileProvider>()
-                .SingleInstance();
-        }
-
-        private static IRegistrationBuilder<TRegister, ConcreteReflectionActivatorData, SingleRegistrationStyle> RegisterVolatileProviderForShell<TRegister, TService>(ContainerBuilder builder)
-            where TService : IVolatileProvider
-        {
-            return RegisterVolatileProvider<TRegister, TService>(builder).InstancePerMatchingLifetimeScope("shell");
-        }
-
-
-        private class ShellContainerRegistrations : IShellContainerRegistrations
-        {
-            public Action<ContainerBuilder> Registrations { get; set; }
         }
     }
 }

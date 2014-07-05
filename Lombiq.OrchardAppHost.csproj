@@ -67,6 +67,7 @@
     <Compile Include="Environment\Tasks\IAsyncBackgroundTask.cs" />
     <Compile Include="Extensions\AssemblyExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="HostContainerFactory.cs" />
     <Compile Include="IOrchardAppHost.cs" />
     <Compile Include="OrchardAppHostExtensions.cs" />
     <Compile Include="OrchardAppHostFactory.cs" />

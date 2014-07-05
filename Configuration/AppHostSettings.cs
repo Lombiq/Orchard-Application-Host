@@ -45,6 +45,7 @@ namespace Lombiq.OrchardAppHost.Configuration
 
         public AppHostSettings()
         {
+            AppDataFolderPath = "~/App_Data";
             ModuleFolderPaths = Enumerable.Empty<string>();
             CoreModuleFolderPaths = Enumerable.Empty<string>();
             ThemeFolderPaths = Enumerable.Empty<string>();
