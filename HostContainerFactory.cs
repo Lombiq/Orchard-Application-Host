@@ -92,7 +92,7 @@ namespace Lombiq.OrchardAppHost
 
                 builder.RegisterType<LoggerService>().As<ILoggerService>().SingleInstance();
 
-                builder.RegisterInstance(appHost).As<IOrchardAppHost>();
+                builder.RegisterInstance(appHost).As<IOrchardAppHost>().ExternallyOwned();
 
                 if (registrations.HostRegistrations != null)
                 {

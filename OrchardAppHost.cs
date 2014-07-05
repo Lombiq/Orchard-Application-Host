@@ -255,10 +255,12 @@ namespace Lombiq.OrchardAppHost
 
         public void Dispose()
         {
-            // If this is implemented we should also terminate the Orchard host here: https://orchard.codeplex.com/workitem/20791
-
             if (_hostContainer != null)
             {
+                // Bit hackish way of disposing shell contexts, there should be an explicit way to do this, see: 
+                // https://orchard.codeplex.com/workitem/20791
+                _hostContainer.Resolve<IOrchardHost>().ReloadExtensions();
+
                 _hostContainer.Dispose();
                 _hostContainer = null;
             }
