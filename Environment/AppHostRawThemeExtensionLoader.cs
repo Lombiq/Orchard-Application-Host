@@ -17,12 +17,17 @@ namespace Lombiq.OrchardAppHost.Environment
     public class AppHostRawThemeExtensionLoader : RawThemeExtensionLoader
     {
         private readonly IVirtualPathProvider _virtualPathProvider;
+        private readonly IExtensionPathsProvider _extensionPathsProvider;
 
 
-        public AppHostRawThemeExtensionLoader(IDependenciesFolder dependenciesFolder, IVirtualPathProvider virtualPathProvider)
+        public AppHostRawThemeExtensionLoader(
+            IDependenciesFolder dependenciesFolder,
+            IVirtualPathProvider virtualPathProvider,
+            IExtensionPathsProvider extensionPathsProvider)
             : base(dependenciesFolder, virtualPathProvider)
         {
             _virtualPathProvider = virtualPathProvider;
+            _extensionPathsProvider = extensionPathsProvider;
         }
 
 
@@ -31,7 +36,8 @@ namespace Lombiq.OrchardAppHost.Environment
             if (Disabled)
                 return null;
 
-            if (descriptor.Location.Contains("/Themes") || descriptor.Location.Contains(@"\Themes"))
+            if (!string.IsNullOrEmpty(descriptor.Location) && 
+                _extensionPathsProvider.GetExtensionPaths().ThemeFolderPaths.Any(path => path.Contains(descriptor.Location)))
             {
                 string projectPath = _virtualPathProvider.Combine(descriptor.Location, descriptor.Id,
                                            descriptor.Id + ".csproj");

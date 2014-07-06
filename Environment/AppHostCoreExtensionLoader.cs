@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Orchard.Environment;
 using Orchard.Environment.Extensions.Loaders;
 using Orchard.Environment.Extensions.Models;
@@ -15,10 +16,16 @@ namespace Lombiq.OrchardAppHost.Environment
     /// </remarks>
     public class AppHostCoreExtensionLoader : CoreExtensionLoader
     {
-        public AppHostCoreExtensionLoader(IDependenciesFolder dependenciesFolder, IAssemblyLoader assemblyLoader)
+        private readonly IExtensionPathsProvider _extensionPathsProvider;
+
+
+        public AppHostCoreExtensionLoader(
+            IDependenciesFolder dependenciesFolder,
+            IAssemblyLoader assemblyLoader,
+            IExtensionPathsProvider extensionPathsProvider)
             : base(dependenciesFolder, assemblyLoader)
         {
-
+            _extensionPathsProvider = extensionPathsProvider;
         }
 
 
@@ -27,7 +34,8 @@ namespace Lombiq.OrchardAppHost.Environment
             if (Disabled)
                 return null;
 
-            if (descriptor.Location.Contains("/Core") || descriptor.Location.Contains(@"\Core"))
+            if (!string.IsNullOrEmpty(descriptor.Location) &&
+                _extensionPathsProvider.GetExtensionPaths().CoreModuleFolderPaths.Any(path => path.Contains(descriptor.Location)))
             {
                 return new ExtensionProbeEntry
                 {

@@ -13,11 +13,20 @@ namespace Lombiq.OrchardAppHost.Environment
     {
         public override string MapPath(string virtualPath)
         {
+            if (Path.DirectorySeparatorChar == '\\')
+            {
+                virtualPath = virtualPath.Replace('/', '\\');
+            }
+            else
+            {
+                virtualPath = virtualPath.Replace('\\', '/');
+            }
+
             if (virtualPath.StartsWith("~"))
             {
                 virtualPath = virtualPath.Substring(1);
             }
-            if (virtualPath.StartsWith("/"))
+            if (virtualPath.StartsWith(Path.DirectorySeparatorChar.ToString()))
             {
                 virtualPath = virtualPath.Substring(1);
             }

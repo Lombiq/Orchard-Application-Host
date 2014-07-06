@@ -53,29 +53,19 @@ namespace Lombiq.OrchardAppHost
                 };
                 builder.RegisterInstance(shellRegistrations).As<IShellContainerRegistrations>();
 
-                // Extension folders should be configured.
-                if (settings.ModuleFolderPaths != null && settings.ModuleFolderPaths.Any())
-                {
-                    builder.RegisterType<ModuleFolders>().As<IExtensionFolders>().SingleInstance()
-                        .WithParameter(new NamedParameter("paths", settings.ModuleFolderPaths));
-                }
-                if (settings.CoreModuleFolderPaths != null && settings.CoreModuleFolderPaths.Any())
-                {
-                    builder.RegisterType<CoreModuleFolders>().As<IExtensionFolders>().SingleInstance()
-                        .WithParameter(new NamedParameter("paths", settings.CoreModuleFolderPaths));
-                }
-                if (settings.ThemeFolderPaths != null && settings.ThemeFolderPaths.Any())
-                {
-                    builder.RegisterType<ThemeFolders>().As<IExtensionFolders>().SingleInstance()
-                        .WithParameter(new NamedParameter("paths", settings.ThemeFolderPaths));
-                }
-
                 // Handling imported assemblies.
                 if (settings.ImportedExtensions != null && settings.ImportedExtensions.Any())
                 {
                     builder.RegisterType<ImportedExtensionsProvider>().As<IExtensionFolders, IExtensionLoader>().SingleInstance()
                         .WithParameter(new NamedParameter("extensions", settings.ImportedExtensions));
                 }
+
+                // Configuring extension loading.
+                builder.RegisterType<ExtensionPathsProvider>().As<IExtensionPathsProvider>().SingleInstance()
+                    .WithParameter(new NamedParameter("hostSettings", settings));
+                builder.RegisterType<AppHostExtensionFolders>().As<IExtensionFolders>().SingleInstance();
+                builder.RegisterType<AppHostCoreExtensionLoader>().As<IExtensionLoader>().SingleInstance();
+                builder.RegisterType<AppHostRawThemeExtensionLoader>().As<IExtensionLoader>().SingleInstance();
 
                 if (settings.DisableConfiguratonCaches)
                 {
@@ -86,9 +76,6 @@ namespace Lombiq.OrchardAppHost
                 {
                     builder.RegisterModule<ExtensionMonitoringDisablingModule>();
                 }
-
-                builder.RegisterType<AppHostCoreExtensionLoader>().As<IExtensionLoader>().SingleInstance();
-                builder.RegisterType<AppHostRawThemeExtensionLoader>().As<IExtensionLoader>().SingleInstance();
 
                 // Either we register MVC singletons or we need at least a new IOrchardShell implementation.
                 builder.Register(ctx => RouteTable.Routes).SingleInstance();

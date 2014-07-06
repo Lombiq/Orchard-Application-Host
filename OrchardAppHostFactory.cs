@@ -4,10 +4,12 @@ using System.Threading.Tasks;
 using Autofac;
 using Lombiq.OrchardAppHost.Configuration;
 using Lombiq.OrchardAppHost.Services.TransientHost;
+using Orchard.ContentManagement.MetaData;
 using Orchard.Environment.Configuration;
 using Orchard.Environment.Descriptor;
 using Orchard.Environment.Descriptor.Models;
 using Orchard.Environment.State;
+using Orchard.Settings;
 
 namespace Lombiq.OrchardAppHost
 {
@@ -81,6 +83,11 @@ namespace Lombiq.OrchardAppHost
                 builder.RegisterType<TransientShellDescriptorManager>().As<IShellDescriptorManager>().SingleInstance();
                 builder.RegisterType<TransientShellStateManager>().As<IShellStateManager>().SingleInstance();
                 builder.RegisterType<TransientStore>().As<ITransientStore>().SingleInstance();
+
+                // These below are only needed if Core extensions are not loaded (i.e. their path not set in AppHostSettings).
+                // Needed too early in ShellContextFactory, since the minimum shell doesn't include any external feautures.
+                builder.RegisterType<NullSiteService>().As<ISiteService>().SingleInstance();
+                builder.RegisterType<NullContentDefinitionManager>().As<IContentDefinitionManager>().SingleInstance();
 
                 shellRegistrations(builder);
             };
