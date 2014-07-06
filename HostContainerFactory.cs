@@ -82,6 +82,11 @@ namespace Lombiq.OrchardAppHost
                     builder.RegisterModule<ConfigurationCacheDisablingModule>();
                 }
 
+                if (settings.DisableExtensionMonitoring)
+                {
+                    builder.RegisterModule<ExtensionMonitoringDisablingModule>();
+                }
+
                 builder.RegisterType<AppHostCoreExtensionLoader>().As<IExtensionLoader>().SingleInstance();
                 builder.RegisterType<AppHostRawThemeExtensionLoader>().As<IExtensionLoader>().SingleInstance();
 

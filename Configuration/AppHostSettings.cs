@@ -37,10 +37,16 @@ namespace Lombiq.OrchardAppHost.Configuration
         public IEnumerable<DefaultShellFeatureState> DefaultShellFeatureStates { get; set; }
 
         /// <summary>
-        /// If set configuration caches (e.g. SessionConfigurationCache, ShellDescriptorCache) will be disabled.
+        /// If set to true, configuration caches (e.g. SessionConfigurationCache, ShellDescriptorCache) will be disabled.
         /// Disable caches if the application runs on multiple instances with a common database.
         /// </summary>
         public bool DisableConfiguratonCaches { get; set; }
+
+        /// <summary>
+        /// If set to true, the monitoring of extension folders (for newly installed or changed extensions) will be disabled.
+        /// Disabling extension monitoring saves memory but you won't be able to add new extensions in runtime.
+        /// </summary>
+        public bool DisableExtensionMonitoring { get; set; }
 
 
         public AppHostSettings()

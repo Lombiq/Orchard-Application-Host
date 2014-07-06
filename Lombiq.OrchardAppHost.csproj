@@ -65,6 +65,7 @@
   <ItemGroup>
     <Compile Include="Configuration\AppHostRegistrations.cs" />
     <Compile Include="Configuration\AppHostSettings.cs" />
+    <Compile Include="Environment\ExtensionMonitoringDisablingModule.cs" />
     <Compile Include="Environment\Tasks\AsyncBackgroundService.cs" />
     <Compile Include="Environment\ProcessingEngineTaskAddedHandler.cs" />
     <Compile Include="Environment\ShellChangeHandler.cs" />

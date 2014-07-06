@@ -1,7 +1,11 @@
-﻿using Autofac;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Autofac;
 using Autofac.Core;
-using Orchard.Data;
-using Orchard.Environment.Descriptor;
+using Orchard.Environment.Extensions.Folders;
 
 namespace Lombiq.OrchardAppHost.Environment
 {
@@ -10,23 +14,15 @@ namespace Lombiq.OrchardAppHost.Environment
     /// applies the configuration to the respective implementations.
     /// </summary>
     /// <remarks>Internal so it isn't automatically registered, just when needed.</remarks>
-    internal class ConfigurationCacheDisablingModule : Module
+    internal class ExtensionMonitoringDisablingModule : Module
     {
         protected override void AttachToComponentRegistration(IComponentRegistry componentRegistry, IComponentRegistration registration)
         {
-            if (registration.Activator.LimitType.IsAssignableTo<SessionConfigurationCache>())
+            if (registration.Activator.LimitType.IsAssignableTo<ExtensionHarvester>())
             {
                 registration.Activating += (sender, e) =>
                 {
-                    ((SessionConfigurationCache)e.Instance).Disabled = true;
-                };
-            }
-
-            if (registration.Activator.LimitType.IsAssignableTo<ShellDescriptorCache>())
-            {
-                registration.Activating += (sender, e) =>
-                {
-                    ((ShellDescriptorCache)e.Instance).Disabled = true;
+                    ((ExtensionHarvester)e.Instance).DisableMonitoring = true;
                 };
             }
         }
