@@ -76,7 +76,7 @@
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="HostContainerFactory.cs" />
     <Compile Include="IOrchardAppHost.cs" />
-    <Compile Include="Log4NetConfigurator.cs" />
+    <Compile Include="DefaultLog4NetConfigurator.cs" />
     <Compile Include="OrchardAppHostExtensions.cs" />
     <Compile Include="OrchardAppHostFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

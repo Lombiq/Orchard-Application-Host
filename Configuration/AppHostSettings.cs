@@ -1,9 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using log4net.Repository;
 
 namespace Lombiq.OrchardAppHost.Configuration
 {
+    public delegate void Log4NetConfigurator(ILoggerRepository loggerRepository);
+
+
     public class AppHostSettings
     {
         /// <summary>
@@ -48,6 +52,11 @@ namespace Lombiq.OrchardAppHost.Configuration
         /// </summary>
         public bool DisableExtensionMonitoring { get; set; }
 
+        /// <summary>
+        /// Delegate for altering the default Orchard Log4Net configuration.
+        /// </summary>
+        public Log4NetConfigurator Log4NetConfigurator { get; set; }
+
 
         public AppHostSettings()
         {
@@ -57,6 +66,7 @@ namespace Lombiq.OrchardAppHost.Configuration
             ThemeFolderPaths = Enumerable.Empty<string>();
             ImportedExtensions = Enumerable.Empty<Assembly>();
             DefaultShellFeatureStates = Enumerable.Empty<DefaultShellFeatureState>();
+            Log4NetConfigurator = repository => { };
         }
     }
 

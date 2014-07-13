@@ -10,6 +10,7 @@ using log4net.Core;
 using log4net.Filter;
 using log4net.Layout;
 using log4net.Repository.Hierarchy;
+using Lombiq.OrchardAppHost.Configuration;
 using Orchard.Logging;
 
 namespace Lombiq.OrchardAppHost
@@ -17,9 +18,9 @@ namespace Lombiq.OrchardAppHost
     /// <summary>
     /// Provides the default Orchard log4net configuration but not from an XML config file but from code.
     /// </summary>
-    internal static class Log4NetConfigurator
+    internal static class DefaultLog4NetConfigurator
     {
-        public static void Configure(string logFilesFolderPath)
+        public static void Configure(string logFilesFolderPath, Log4NetConfigurator configurator)
         {
             if (logFilesFolderPath.StartsWith("~")) logFilesFolderPath = logFilesFolderPath.Substring(1);
             if (logFilesFolderPath.StartsWith("/")) logFilesFolderPath = logFilesFolderPath.Substring(1);
@@ -36,13 +37,11 @@ namespace Lombiq.OrchardAppHost
 
             var debugFileAppender = BaseFileAppender(patternLayout);
             debugFileAppender.File = Path.Combine(logFilesFolderPath, "orchard-debug");
-            //debugFileAppender.File = @"E:\Projects\Munka\Lombiq\\Orchard Dev Hg\src\Lombiq.OrchardAppHost.Sample\bin\Debug\App_Data\Logs\orchard-debug";
             debugFileAppender.ActivateOptions();
             hierarchy.Root.AddAppender(debugFileAppender);
 
             var errorFileAppender = BaseFileAppender(patternLayout);
             errorFileAppender.File = Path.Combine(logFilesFolderPath, "orchard-error");
-            //errorFileAppender.File = @"E:\Projects\Munka\Lombiq\\Orchard Dev Hg\src\Lombiq.OrchardAppHost.Sample\bin\Debug\App_Data\Logs\orchard-error";
             var levelFilter = new LevelRangeFilter { LevelMin = Level.Error };
             levelFilter.ActivateOptions();
             errorFileAppender.AddFilter(levelFilter);
@@ -62,6 +61,8 @@ namespace Lombiq.OrchardAppHost
             GetLogger("NHibernate.Cache").Level = Level.Error;
             GetLogger("NHibernate.AdoNet.AbstractBatcher").Level = Level.Off;
             GetLogger("NHibernate.Util.ADOExceptionReporter").Level = Level.Off;
+
+            configurator(hierarchy);
         }
 
 

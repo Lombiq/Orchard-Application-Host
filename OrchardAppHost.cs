@@ -111,7 +111,7 @@ namespace Lombiq.OrchardAppHost
             _hostContainer = HostContainerFactory.CreateHostContainer(this, _settings, _registrations);
 
             var virtualPathProvider = _hostContainer.Resolve<IVirtualPathProvider>();
-            Log4NetConfigurator.Configure(virtualPathProvider.MapPath(virtualPathProvider.Combine(_settings.AppDataFolderPath, "Logs")));
+            DefaultLog4NetConfigurator.Configure(virtualPathProvider.MapPath(virtualPathProvider.Combine(_settings.AppDataFolderPath, "Logs")), _settings.Log4NetConfigurator);
 
             _hostContainer.Resolve<IOrchardHost>().Initialize();
 
