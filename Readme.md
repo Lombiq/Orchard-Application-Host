@@ -4,7 +4,7 @@
 
 ## Overview
 
-The Orchard Application Host is an framework that lets you run your application hosted inside [Orchard](following features and goodies to any application:). This enables you to use Orchard's features and services from any application (not just web application), including:
+The Orchard Application Host is a portable environment that lets you run your application inside [Orchard](http://orchardproject.net). This enables you to use Orchard's features and services from any application (not just web applications), including:
 
 - Automatic dependency injection
 - Helpers and utilities
@@ -19,6 +19,7 @@ The Orchard Application Host is an framework that lets you run your application 
 
 # Usage
 
+- See the examples in Lombiq.OrchardAppHost.Sample.
 - Disable SessionConfigurationCache otherwise you'll get "The invoked member is not supported in a dynamic assembly." exceptions that are harmless but prevent the session cache from being used anyway.
 - You'll get a "The invoked member is not supported in a dynamic assembly." exception during the first startup from AbstractDataServicesProvider but this is harmless.
 -  Also from AbstractDataServicesProvider you'll get a "Could not load file or assembly 'NHibernate.XmlSerializers ...' or one of its dependencies. The system cannot find the file specified." exception that [is also harmless](http://www.mail-archive.com/nhusers@googlegroups.com/msg06041.html).
