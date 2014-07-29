@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Orchard.Environment.Extensions.Folders;
 using Orchard.Environment.Extensions.Models;
 
