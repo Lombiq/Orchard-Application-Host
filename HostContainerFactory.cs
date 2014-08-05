@@ -17,6 +17,9 @@ using Orchard.Logging;
 
 namespace Lombiq.OrchardAppHost
 {
+    /// <summary>
+    /// Builds the Autofac container with all the default registrations.
+    /// </summary>
     internal static class HostContainerFactory
     {
         public static IContainer CreateHostContainer(IOrchardAppHost appHost, AppHostSettings settings, AppHostRegistrations registrations)

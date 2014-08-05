@@ -162,8 +162,8 @@ namespace Lombiq.OrchardAppHost
                 {
                     // Will return the stub from Orchard.Mvc.MvcModule. There are some direct resolve calls to HttpContextBase in
                     // Orchard but it doesn't matter here (otherwise it does: https://orchard.codeplex.com/workitem/20778) as the
-                    // point is to keep the same WorkContext in HttpContext.Items the same throughout this scope (unless a new
-                    // WCS is started somewhere).
+                    // point is to keep the WorkContext in HttpContext.Items the same throughout this scope (unless a new WCS is 
+                    // started somewhere).
                     httpContext = scope.Resolve<HttpContextBase>();
                 }
                 catch (DependencyResolutionException ex)
@@ -214,7 +214,7 @@ namespace Lombiq.OrchardAppHost
                     }
                     else
                     {
-                        // Due to possibly await-ed calls in the process we keep track of everything that uses is stored in ContextState<T> normally.
+                        // Due to possibly await-ed calls in the process we keep track of everything that is stored in ContextState<T> normally.
                         // This is needed because ContextState<T> looses state on thread switch.
                         // Here we re-apply every change so the necessary services will get to know everything.
                         var shellChangeHandler = scope.Resolve<IShellChangeHandler>();
@@ -238,7 +238,7 @@ namespace Lombiq.OrchardAppHost
                     }
 
                     // Either this or running tasks through IProcessingEngine and restarting shells manually.
-                    // EndRequest() have unwanted side effects in the future.
+                    // EndRequest() can have unwanted side effects in the future.
                     orchardHost.EndRequest();
                 }
             }

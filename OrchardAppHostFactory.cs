@@ -45,7 +45,9 @@ namespace Lombiq.OrchardAppHost
         }
 
         /// <summary>
-        /// Creates and starts a persistence-less App Host that doesn't have a database connection.
+        /// Creates and starts a persistence-less App Host that doesn't have a database connection. A transient host is very light-weight and
+        /// although its state is not persisted (the Orchard shell state; any persistence you do will work of course) it's kept until the
+        /// Host is disposed. That means you can still enabled/disable features for example and the shell state will change as expected.
         /// </summary>
         /// <param name="settings">Settings for the App Host.</param>
         /// <param name="registrations">Dependency registrations for the App Host.</param>
