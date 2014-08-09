@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <licenseUrl>https://orchardapphost.codeplex.com/license</licenseUrl>
+    <projectUrl>https://orchardapphost.codeplex.com/</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <copyright>Copyright Lombiq Technologies Ltd. 2014</copyright>
+    <tags>Orchard Framework SelfHost Lombiq</tags>
+    <dependencies>
+      <dependency id="Orchard.Framework" version="1.8.1" />
+    </dependencies>
+  </metadata>
+</package>
