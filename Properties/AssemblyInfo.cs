@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Lombiq.OrchardAppHost")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("The Orchard Application Host is a portable environment that lets you run your application inside [Orchard](http://orchardproject.net)")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Lombiq Technologies Ltd.")]
 [assembly: AssemblyProduct("Lombiq.OrchardAppHost")]
-[assembly: AssemblyCopyright("Copyright ©  2014")]
+[assembly: AssemblyCopyright("Copyright © Lombiq Technologies Ltd. 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
