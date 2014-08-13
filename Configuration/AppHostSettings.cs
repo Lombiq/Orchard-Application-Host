@@ -66,6 +66,8 @@ namespace Lombiq.OrchardAppHost.Configuration
             ThemeFolderPaths = Enumerable.Empty<string>();
             ImportedExtensions = Enumerable.Empty<Assembly>();
             DefaultShellFeatureStates = Enumerable.Empty<DefaultShellFeatureState>();
+            DisableConfiguratonCaches = true;
+            DisableExtensionMonitoring = true;
             Log4NetConfigurator = repository => { };
         }
     }
