@@ -23,7 +23,7 @@ You can see a demo of the Orchard Application Host on the [recording of the Orch
 
 # Usage
 
-- See examples in [Lombiq.OrchardAppHost.Sample](https://orchardapphostsample.codeplex.com/) and for a full usage scenario with a non-Orchard solution in the [Orchard Application Host Quick Start](https://bitbucket.org/Lombiq/orchard-application-host-quick-start).
+- See examples in [Lombiq.OrchardAppHost.Sample](https://orchardapphostsample.codeplex.com/) and for a full usage scenario with a non-Orchard solution in the [Orchard Application Host Quick Start](https://bitbucket.org/Lombiq/orchard-application-host-quick-start). When you add Orchard App Host to a solution as source make sure to put Orchard into a folder called "Orchard" at the same level as the containing folder of the App Host project (as it is in the sample solution).
 - Disable SessionConfigurationCache otherwise you'll get "The invoked member is not supported in a dynamic assembly." exceptions that are harmless but prevent the session cache from being used anyway.
 - You'll get a "The invoked member is not supported in a dynamic assembly." exception during the first startup from AbstractDataServicesProvider but this is harmless.
 -  Also from AbstractDataServicesProvider you'll get a "Could not load file or assembly 'NHibernate.XmlSerializers ...' or one of its dependencies. The system cannot find the file specified." exception that [is also harmless](http://www.mail-archive.com/nhusers@googlegroups.com/msg06041.html).
