@@ -58,7 +58,8 @@ namespace Lombiq.OrchardAppHost.Environment
                         {
                             Location = string.Empty,
                             Id = extensionByName.Key,
-                            ExtensionType = DefaultExtensionTypes.Module
+                            ExtensionType = DefaultExtensionTypes.Module,
+                            Path = extensionByName.Key
                         };
 
                         var features = extensionByName.Value.Features.Select(feature =>
