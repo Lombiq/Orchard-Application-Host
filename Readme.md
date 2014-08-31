@@ -4,7 +4,7 @@
 
 ## Overview
 
-The Orchard Application Host is a portable environment that lets you run your application inside [Orchard](http://orchardproject.net). This enables you to use Orchard's features and services from any application (not just web applications), including:
+The [Orchard Application Host](http://orchardapphost.codeplex.com/) is a portable environment that lets you run your application inside a standalone [Orchard](http://orchardproject.net) shell. I.e. you can write any app with an Orchard developer experience, without using an Orchard web app. This enables you to use Orchard's features and services from any application (not just web applications), including:
 
 - Automatic dependency injection
 - Helpers and utilities
