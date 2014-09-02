@@ -30,6 +30,7 @@ You can see a demo of the Orchard Application Host on the [recording of the Orch
 - If you want to use anything, even indirectly, from Orchard.Core, you have to add a project reference to it. E.g. even if you don't access anything from Orchard.Core but you use a service that gets ISiteService injected what in turn has an implementation in Orchard.Core then you indirectly depend on Orchard Core; thus, you have to add a project reference to it.
 - When using SQL CE you should add a reference to its assembly System.Data.SqlServerCe and set it as Copy Local = true.
 - Imported extensions don't need to declare a Module.txt but still can have features: by default they get a feature with the same name as the assembly's (short) name and also all OrchardFeature attribute usages will be processed and their values registered as features.
+- Note that starting Orchard App Host will currently take over ASP.NET MVC and Web API controller instantiation, see [this Orchard issue](https://orchard.codeplex.com/workitem/20919).
 
 ### Using Orchard App Host as source in a solution
 
