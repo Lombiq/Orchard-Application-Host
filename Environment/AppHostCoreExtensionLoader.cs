@@ -8,7 +8,7 @@ namespace Lombiq.OrchardAppHost.Environment
 {
     /// <summary>
     /// <see cref="Orchard.Environment.Extensions.Loaders.IExtensionLoader"/> implementation for loading Core extensions from
-    /// an arbitrary folder with the name called Core.
+    /// arbitrary folders.
     /// </summary>
     /// <remarks>
     /// Only overriding <see cref="CoreExtensionLoader"/> to be able to load extensions with the Location not just "~/Core".
