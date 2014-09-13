@@ -38,6 +38,7 @@ namespace Lombiq.OrchardAppHost
                     Registrations = shellBuilder =>
                     {
                         // Despite imported assemblies being handled these registrations are necessary, because they are needed too early.
+                        // Adding them as normal services, even with OrchardSuppressDependency, wouldn't work.
 
                         RegisterAppDataFolderRoot(shellBuilder, settings.AppDataFolderPath).InstancePerMatchingLifetimeScope("shell");
 

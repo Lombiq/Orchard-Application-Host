@@ -50,7 +50,7 @@ The [Orchard Application Host Quick Start](https://bitbucket.org/Lombiq/orchard-
 	<!-- Orchard App Host (https://orchardapphost.codeplex.com/) compatibility start. Enabling the usage of a lib folder at a different location. -->
 	<ItemGroup>
 	  <LibReferenceSearchPathFiles Include="..\..\Orchard\lib\**\*.dll">
-	      <InProject>false</InProject>
+	    <InProject>false</InProject>
 	  </LibReferenceSearchPathFiles>
 	</ItemGroup>
 	<Target Name="BeforeResolveReferences">
@@ -61,4 +61,14 @@ The [Orchard Application Host Quick Start](https://bitbucket.org/Lombiq/orchard-
 	    <Output TaskParameter="Value" PropertyName="AssemblySearchPaths" />
 	  </CreateProperty>
 	</Target>
+	<PropertyGroup Condition="Exists('..\..\Orchard\lib')">
+	  <ModulesRoot>..\..\Orchard\src\Orchard.Web\Modules\Orchard.Alias\</ModulesRoot>
+	</PropertyGroup>
 	<!-- Orchard App Host (https://orchardapphost.codeplex.com/) compatibility end. -->
+
+Also make sure to prefix every project reference that points to one of Orchard's built-in projects with `$(ModulesRoot)`:
+
+	<ProjectReference Include="$(ModulesRoot)..\..\..\Orchard\Orchard.Framework.csproj">
+	  <Project>{2D1D92BB-4555-4CBE-8D0E-63563D6CE4C6}</Project>
+	  <Name>Orchard.Framework</Name>
+	</ProjectReference>
