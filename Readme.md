@@ -16,7 +16,7 @@ The [Orchard Application Host](http://orchardapphost.codeplex.com/) is a portabl
 - Logging
 - Background tasks
 
-With Orchard Application Host you can create console applications, Windows services, desktop application, cloud workers or any other type of app that uses Orchard's capabilities. No more low-level project start: you get an application framework that you can begin developing awesome software with, utilizing your Orchard knowledge and Orchard's power.
+With Orchard Application Host you can create console applications, Windows services, desktop applications, cloud workers or any other type of app that uses Orchard's capabilities. No more low-level project start: you get an application framework that you can begin developing awesome software with, utilizing your Orchard knowledge and Orchard's power.
 
 You can see a demo of the Orchard Application Host on the [recording of the Orchard Community Meeting](https://www.youtube.com/watch?v=_9lf7uZ-Ztk&feature=youtu.be&t=22m55s).
 
