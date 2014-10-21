@@ -27,8 +27,10 @@ namespace Lombiq.OrchardAppHost
             hierarchy.Root.Level = Level.Warn;
             hierarchy.Configured = true;
 
-            var patternLayout = new PatternLayout();
-            patternLayout.ConversionPattern = "%date [%thread] %-5level %logger - %P{Tenant} - %message%newline";
+            var patternLayout = new PatternLayout
+            {
+                ConversionPattern = "%date [%thread] %-5level %logger - %P{Tenant} - %message%newline"
+            };
             patternLayout.ActivateOptions();
 
             var debugFileAppender = BaseFileAppender(patternLayout);
@@ -67,14 +69,16 @@ namespace Lombiq.OrchardAppHost
 
         private static OrchardFileAppender BaseFileAppender(PatternLayout patternLayout)
         {
-            var appender = new OrchardFileAppender();
-            appender.AppendToFile = true;
-            appender.ImmediateFlush = true;
-            appender.StaticLogFileName = false;
-            appender.RollingStyle = log4net.Appender.RollingFileAppender.RollingMode.Date;
-            appender.DatePattern = "-yyyy.MM.dd'.log'";
-            appender.LockingModel = new FileAppender.MinimalLock();
-            appender.Layout = patternLayout;
+            var appender = new OrchardFileAppender
+            {
+                AppendToFile = true,
+                ImmediateFlush = true,
+                StaticLogFileName = false,
+                RollingStyle = log4net.Appender.RollingFileAppender.RollingMode.Date,
+                DatePattern = "-yyyy.MM.dd'.log'",
+                LockingModel = new FileAppender.MinimalLock(),
+                Layout = patternLayout
+            };
 
             return appender;
         }
