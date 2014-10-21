@@ -32,11 +32,13 @@ namespace Lombiq.OrchardAppHost
             patternLayout.ActivateOptions();
 
             var debugFileAppender = BaseFileAppender(patternLayout);
+            debugFileAppender.Name = "debug-file";
             debugFileAppender.File = Path.Combine(logFilesFolderPath, "orchard-debug");
             debugFileAppender.ActivateOptions();
             hierarchy.Root.AddAppender(debugFileAppender);
 
             var errorFileAppender = BaseFileAppender(patternLayout);
+            errorFileAppender.Name = "error-file";
             errorFileAppender.File = Path.Combine(logFilesFolderPath, "orchard-error");
             var levelFilter = new LevelRangeFilter { LevelMin = Level.Error };
             levelFilter.ActivateOptions();
@@ -47,6 +49,7 @@ namespace Lombiq.OrchardAppHost
             var simpleLayout = new SimpleLayout();
             simpleLayout.ActivateOptions();
             var debuggerAppender = new DebugAppender();
+            debuggerAppender.Name = "debugger";
             debuggerAppender.ImmediateFlush = true;
             debuggerAppender.Layout = simpleLayout;
             debuggerAppender.ActivateOptions();
