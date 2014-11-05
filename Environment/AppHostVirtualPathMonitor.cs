@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Orchard.Caching;
+using Orchard.Environment.Extensions;
 using Orchard.FileSystems.VirtualPath;
 
 namespace Lombiq.OrchardAppHost.Environment
@@ -12,6 +13,7 @@ namespace Lombiq.OrchardAppHost.Environment
     /// <remarks>
     /// Copied from <see cref="Orchard.Commands.CommandHostVirtualPathMonitor"/> because it's internal.
     /// </remarks>
+    [OrchardSuppressDependency("Orchard.FileSystems.VirtualPath.DefaultVirtualPathMonitor")]
     public class AppHostVirtualPathMonitor : IVirtualPathMonitor
     {
         private readonly IVirtualPathProvider _virtualPathProvider;

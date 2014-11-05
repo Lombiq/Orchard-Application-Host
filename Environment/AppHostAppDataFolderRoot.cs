@@ -1,4 +1,5 @@
-﻿using Orchard.FileSystems.AppData;
+﻿using Orchard.Environment.Extensions;
+using Orchard.FileSystems.AppData;
 using Orchard.FileSystems.VirtualPath;
 
 namespace Lombiq.OrchardAppHost.Environment
@@ -7,6 +8,7 @@ namespace Lombiq.OrchardAppHost.Environment
     /// <see cref="IAppDataFolderRoot"/> implementation for the Orchard App Host that doesn't make use of
     /// <see cref="System.Web.Hosting.HostingEnvironment"/> (since that would just work for web applications).
     /// </summary>
+    [OrchardSuppressDependency("Orchard.FileSystems.AppData.AppDataFolderRoot")]
     public class AppHostAppDataFolderRoot : IAppDataFolderRoot
     {
         private readonly IVirtualPathProvider _virtualPathProvider;

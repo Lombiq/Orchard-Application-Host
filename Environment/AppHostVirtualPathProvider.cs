@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Orchard.Environment.Extensions;
 using Orchard.FileSystems.VirtualPath;
 
 namespace Lombiq.OrchardAppHost.Environment
@@ -9,6 +10,7 @@ namespace Lombiq.OrchardAppHost.Environment
     /// <see cref="IVirtualPathProvider"/> implementation for the Orchard App Host that doesn't make use of
     /// <see cref="System.Web.Hosting.HostingEnvironment"/> (since that would just work for web applications).
     /// </summary>
+    [OrchardSuppressDependency("Orchard.FileSystems.VirtualPath.DefaultVirtualPathProvider")]
     public class AppHostVirtualPathProvider : DefaultVirtualPathProvider, IVirtualPathProvider
     {
         public override string MapPath(string virtualPath)

@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Orchard.Environment.Extensions;
 using Orchard.FileSystems.VirtualPath;
 using Orchard.FileSystems.WebSite;
 
@@ -8,6 +9,7 @@ namespace Lombiq.OrchardAppHost.Environment
     /// <see cref="IWebSiteFolder"/> implementation for the Orchard App Host that doesn't make use of
     /// <see cref="System.Web.Hosting.HostingEnvironment"/> (since that would just work for web applications).
     /// </summary>
+    [OrchardSuppressDependency("Orchard.FileSystems.WebSite.WebSiteFolder")]
     public class AppHostWebSiteFolder : WebSiteFolder, IWebSiteFolder
     {
         private readonly IVirtualPathProvider _virtualPathProvider;
