@@ -20,6 +20,8 @@ With Orchard Application Host you can create console applications, Windows servi
 
 You can see a demo of the Orchard Application Host on the [recording of the Orchard Community Meeting](https://www.youtube.com/watch?v=_9lf7uZ-Ztk&feature=youtu.be&t=22m55s).
 
+Among others Orchard Application Host powers the reverse proxy of the [Hosting Suite](https://dotnest.com/knowledge-base/topics/lombiq-hosting-suite) too.
+
 
 ## Usage
 
