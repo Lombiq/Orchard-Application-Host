@@ -1,7 +1,7 @@
 ﻿
 namespace System.Reflection
 {
-    internal static class AssemblyExtensions
+    public static class AssemblyExtensions
     {
         /// <summary>
         /// Returns the short name of an <see cref="Assembly"/> (i.e. the same, human readable anem, without version number or thumbprints
