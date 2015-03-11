@@ -30,11 +30,6 @@ namespace Lombiq.OrchardAppHost.Environment
         }
         
 
-        public bool IsFullTrust
-        {
-            get { return AppDomain.CurrentDomain.IsHomogenous && AppDomain.CurrentDomain.IsFullyTrusted; }
-        }
-
         public string MapPath(string virtualPath)
         {
             return _virtualPathProvider.MapPath(virtualPath);

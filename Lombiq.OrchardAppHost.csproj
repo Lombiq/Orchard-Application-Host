@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Lombiq.OrchardAppHost</RootNamespace>
     <AssemblyName>Lombiq.OrchardAppHost</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -63,6 +64,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssemblyRedirectAssemblyResolver.cs" />
     <Compile Include="Configuration\AppHostRegistrations.cs" />
     <Compile Include="Configuration\AppHostSettings.cs" />
     <Compile Include="Environment\AppHostExtensionFolders.cs" />

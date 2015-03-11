@@ -55,6 +55,8 @@ namespace Lombiq.OrchardAppHost
             // Trying to remove first so no duplicate event registration can occur.
             AppDomain.CurrentDomain.AssemblyResolve -= ResolveAssembly;
             AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
+            AppDomain.CurrentDomain.AssemblyResolve -= AssemblyRedirectAssemblyResolver.ResolveAssembly;
+            AppDomain.CurrentDomain.AssemblyResolve += AssemblyRedirectAssemblyResolver.ResolveAssembly;
             
 
             // Automatically importing OrchardAppHost assemblies.

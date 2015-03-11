@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Orchard.Environment.Extensions;
 using Orchard.FileSystems.VirtualPath;
 
@@ -68,6 +69,11 @@ namespace Lombiq.OrchardAppHost.Environment
 
         public override IEnumerable<string> ListFiles(string path)
         {
+            if (!DirectoryExists(path))
+            {
+                return Enumerable.Empty<string>();
+            }
+
             return Directory.EnumerateFiles(MapPath(path));
         }
 

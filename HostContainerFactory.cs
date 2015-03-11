@@ -26,6 +26,8 @@ namespace Lombiq.OrchardAppHost
         {
             return OrchardStarter.CreateHostContainer(builder =>
             {
+                builder.RegisterType<AppHostEnvironment>().As<IHostEnvironment>().SingleInstance();
+
                 // Needed also for shells, separately.
                 RegisterAppDataFolderRoot(builder, settings.AppDataFolderPath).SingleInstance();
 

@@ -43,6 +43,11 @@ namespace Lombiq.OrchardAppHost.Environment.TransientHost
             throw new NotImplementedException();
         }
 
+        public ContentItem Restore(ContentItem contentItem, VersionOptions options)
+        {
+            throw new NotImplementedException();
+        }
+
         public ContentItem Get(int id)
         {
             throw new NotImplementedException();
@@ -89,6 +94,11 @@ namespace Lombiq.OrchardAppHost.Environment.TransientHost
         }
 
         public void Remove(ContentItem contentItem)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Destroy(ContentItem contentItem)
         {
             throw new NotImplementedException();
         }
