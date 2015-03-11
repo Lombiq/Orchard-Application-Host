@@ -52,32 +52,9 @@ namespace Lombiq.OrchardAppHost
 
         public async Task Startup()
         {
-            // Trying to load not found assemblies from the Dependencies folder. This is instead of the assemblyBinding config
-            // in Orchard's Web.config.
-            AppDomain.CurrentDomain.AssemblyResolve += (object sender, ResolveEventArgs args) =>
-            {
-                // Don't run if the host container is not initialized or was disposed.
-                if (_hostContainer == null) return null;
-
-                var assemblyName = args.Name.ToAssemblyShortName();
-                var dependenciesFolder = _hostContainer.Resolve<IDependenciesFolder>();
-                var path = string.Empty;
-
-                var dependency = dependenciesFolder.GetDescriptor(assemblyName);
-                if (dependency != null) path = dependency.VirtualPath;
-                else if (args.RequestingAssembly != null)
-                {
-                    dependency = dependenciesFolder.GetDescriptor(args.RequestingAssembly.ShortName());
-                    if (dependency != null)
-                    {
-                        var reference = dependency.References.SingleOrDefault(r => r.Name == assemblyName);
-                        if (reference != null) path = reference.VirtualPath;
-                    }
-                }
-
-                if (!string.IsNullOrEmpty(path)) return Assembly.LoadFile(path);
-                return null;
-            };
+            // Trying to remove first so no duplicate event registration can occur.
+            AppDomain.CurrentDomain.AssemblyResolve -= ResolveAssembly;
+            AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
             
 
             // Automatically importing OrchardAppHost assemblies.
@@ -255,6 +232,35 @@ namespace Lombiq.OrchardAppHost
                 _hostContainer.Dispose();
                 _hostContainer = null;
             }
+        }
+
+
+        /// <summary>
+        /// Trying to load not found assemblies from the Dependencies folder. This is instead of the assemblyBinding config in Orchard's Web.config.
+        /// </summary>
+        private Assembly ResolveAssembly(object sender, ResolveEventArgs args)
+        {
+            // Don't run if the host container is not initialized or was disposed.
+            if (_hostContainer == null) return null;
+
+            var assemblyName = args.Name.ToAssemblyShortName();
+            var dependenciesFolder = _hostContainer.Resolve<IDependenciesFolder>();
+            var path = string.Empty;
+
+            var dependency = dependenciesFolder.GetDescriptor(assemblyName);
+            if (dependency != null) path = dependency.VirtualPath;
+            else if (args.RequestingAssembly != null)
+            {
+                dependency = dependenciesFolder.GetDescriptor(args.RequestingAssembly.ShortName());
+                if (dependency != null)
+                {
+                    var reference = dependency.References.SingleOrDefault(r => r.Name == assemblyName);
+                    if (reference != null) path = reference.VirtualPath;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(path)) return Assembly.LoadFile(path);
+            return null;
         }
     }
 }
