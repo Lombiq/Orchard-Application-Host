@@ -112,7 +112,7 @@ namespace Lombiq.OrchardAppHost
         {
             var shellContext = _hostContainer.Resolve<IOrchardHost>().GetShellContext(new ShellSettings { Name = shellName });
             // We need a single HCA, and thus the same HttpContext throughout this scope to carry the work context. Especially
-            // important for async code, see: https://orchard.codeplex.com/workitem/20509
+            // important for async code, see: https://github.com/OrchardCMS/Orchard/issues/4338
             // Using InstancePerLifetimeScope() inside the shell ContinerBuilder still yields multiple instantiations.
             var hca = new AppHostHttpContextAccessor();
             using (var scope = shellContext.LifetimeScope.BeginLifetimeScope(
@@ -140,7 +140,7 @@ namespace Lombiq.OrchardAppHost
                 try
                 {
                     // Will return the stub from Orchard.Mvc.MvcModule. There are some direct resolve calls to HttpContextBase in
-                    // Orchard but it doesn't matter here (otherwise it does: https://orchard.codeplex.com/workitem/20778) as the
+                    // Orchard but it doesn't matter here (otherwise it does: https://github.com/OrchardCMS/Orchard/issues/4607) as the
                     // point is to keep the WorkContext in HttpContext.Items the same throughout this scope (unless a new WCS is 
                     // started somewhere).
                     httpContext = scope.Resolve<HttpContextBase>();
@@ -228,7 +228,7 @@ namespace Lombiq.OrchardAppHost
             if (_hostContainer != null)
             {
                 // Bit hackish way of disposing shell contexts, there should be an explicit way to do this, see: 
-                // https://orchard.codeplex.com/workitem/20791
+                // https://github.com/OrchardCMS/Orchard/issues/4620
                 _hostContainer.Resolve<IOrchardHost>().ReloadExtensions();
 
                 _hostContainer.Dispose();

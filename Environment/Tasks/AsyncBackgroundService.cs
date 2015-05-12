@@ -10,7 +10,7 @@ namespace Lombiq.OrchardAppHost.Environment.Tasks
     /// Runs async background tasks.
     /// </summary>
     /// <remarks>
-    /// Also see: https://orchard.codeplex.com/workitem/20383
+    /// There won't be a similar service in Orchard, see: https://github.com/OrchardCMS/Orchard/issues/4212
     /// </remarks>
     public class AsyncBackgroundService : IBackgroundTask
     {
