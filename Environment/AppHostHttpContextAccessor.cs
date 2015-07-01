@@ -35,5 +35,11 @@ namespace Lombiq.OrchardAppHost.Environment
                 get { return _items; }
             }
         }
+
+
+        public HttpContextBase CreateContext(Autofac.ILifetimeScope lifetimeScope)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

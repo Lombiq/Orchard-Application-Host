@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -134,26 +135,10 @@ namespace Lombiq.OrchardAppHost
                         .SingleInstance();
                 }))
             {
-                HttpContextBase httpContext;
-
-                // Resolving will fail if it's just the setup shell. TryResolve() would still cause this exception.
-                try
-                {
-                    // Will return the stub from Orchard.Mvc.MvcModule. There are some direct resolve calls to HttpContextBase in
-                    // Orchard but it doesn't matter here (otherwise it does: https://github.com/OrchardCMS/Orchard/issues/4607) as the
-                    // point is to keep the WorkContext in HttpContext.Items the same throughout this scope (unless a new WCS is 
-                    // started somewhere).
-                    httpContext = scope.Resolve<HttpContextBase>();
-                }
-                catch (DependencyResolutionException ex)
-                {
-                    // Unfortunately the only way to identify the specific exception is by its message.
-                    if (ex.Message.StartsWith("No scope with a Tag matching 'work' is visible from the scope in which the instance"))
-                    {
-                        httpContext = new AppHostHttpContextAccessor.HttpContextPlaceholder();
-                    }
-                    else throw;
-                }
+                var httpContext = new MvcModule.HttpContextPlaceholder(
+                    new ConcurrentDictionary<object, HttpContextBase>(),
+                    hca,
+                    () => "http://localhost");
 
                 hca.Set(httpContext);
 
