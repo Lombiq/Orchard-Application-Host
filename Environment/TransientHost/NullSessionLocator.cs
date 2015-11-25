@@ -36,5 +36,10 @@ namespace Lombiq.OrchardAppHost.Environment.TransientHost
         public void Cancel()
         {
         }
+
+        public NHibernate.ISession GetSession()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

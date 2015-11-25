@@ -135,10 +135,7 @@ namespace Lombiq.OrchardAppHost
                         .SingleInstance();
                 }))
             {
-                var httpContext = new MvcModule.HttpContextPlaceholder(
-                    new ConcurrentDictionary<object, HttpContextBase>(),
-                    hca,
-                    () => "http://localhost");
+                var httpContext = new MvcModule.HttpContextPlaceholder(() => "http://localhost");
 
                 hca.Set(httpContext);
 
