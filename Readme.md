@@ -80,7 +80,7 @@ Also make sure to prefix every project reference that points to one of Orchard's
 	  <Name>Orchard.Framework</Name>
 	</ProjectReference>
 
-The module's source is available in two public source repositories, automatically mirrored in both directions with [Git-hg Mirror](https://githgmirror.com):
+The project's source is available in two public source repositories, automatically mirrored in both directions with [Git-hg Mirror](https://githgmirror.com):
 
 - [https://bitbucket.org/Lombiq/orchard-application-host](https://bitbucket.org/Lombiq/orchard-application-host) (Mercurial repository)
 - [https://github.com/Lombiq/Orchard-Application-Host](https://github.com/Lombiq/Orchard-Application-Host) (Git repository)
