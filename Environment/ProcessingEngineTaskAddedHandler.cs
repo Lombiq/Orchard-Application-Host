@@ -18,9 +18,9 @@ namespace Lombiq.OrchardAppHost.Environment
 
 
     /// <summary>
-    /// Service for detecting and registering when tasks are added to <see cref="IProcessingEngine"/>. These tasks are then explicitly
-    /// queued again. This is necessary as <see cref="IProcessingEngine"/>'s implementation looses registered tasks on thread switches
-    /// (what happens in async code).
+    /// Service for detecting and registering when tasks are added to <see cref="IProcessingEngine"/>. These tasks are 
+    /// then explicitly queued again. This is necessary as <see cref="IProcessingEngine"/>'s implementation looses 
+    /// registered tasks on thread switches (what happens in async code).
     /// </summary>
     public interface IProcessingEngineTaskAddedHandler
     {

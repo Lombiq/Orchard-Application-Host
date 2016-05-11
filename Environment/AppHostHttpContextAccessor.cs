@@ -6,9 +6,9 @@ using Orchard.Mvc;
 namespace Lombiq.OrchardAppHost.Environment
 {
     /// <summary>
-    /// <see cref="IHttpContextAccessor"/> implementation for the Orchard App Host. It's used to carry an <see cref="HttpContextBase"/>
-    /// instance throughout the scope of processes run in the App Host. This is necessary to maintain the work context throughout the 
-    /// process, even if it's async (and thus causes thread switches).
+    /// <see cref="IHttpContextAccessor"/> implementation for the Orchard App Host. It's used to carry an 
+    /// <see cref="HttpContextBase"/> instance throughout the scope of processes run in the App Host. This is necessary 
+    /// to maintain the work context throughout the process, even if it's async (and thus causes thread switches).
     /// </summary>
     public class AppHostHttpContextAccessor : IHttpContextAccessor
     {

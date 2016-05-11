@@ -6,7 +6,8 @@ using Orchard.Environment.Extensions;
 namespace Lombiq.OrchardAppHost.Services.TransientHost
 {
     /// <summary>
-    /// An <see cref="Orchard.Environment.Configuration.IShellSettingsManager"/> implementation that doesn't persist shell settings.
+    /// An <see cref="Orchard.Environment.Configuration.IShellSettingsManager"/> implementation that doesn't persist 
+    /// shell settings.
     /// </summary>
     [OrchardFeature("Lombiq.OrchardAppHost.TransientHost")]
     public class TransientShellSettingsManager : IShellSettingsManager

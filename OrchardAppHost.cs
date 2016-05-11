@@ -65,7 +65,10 @@ namespace Lombiq.OrchardAppHost
             _settings.ImportedExtensions = _settings.ImportedExtensions.Union(new[] { this.GetType().Assembly });
 
             // Automatically enabling OrchardAppHost root feature to register common dependencies.
-            if (_settings.DefaultShellFeatureStates == null) _settings.DefaultShellFeatureStates = Enumerable.Empty<DefaultShellFeatureState>();
+            if (_settings.DefaultShellFeatureStates == null)
+            {
+                _settings.DefaultShellFeatureStates = Enumerable.Empty<DefaultShellFeatureState>();
+            }
             if (!_settings.DefaultShellFeatureStates.Any(state => state.ShellName == ShellSettings.DefaultName))
             {
                 _settings.DefaultShellFeatureStates = _settings.DefaultShellFeatureStates.Union(new[]
@@ -82,7 +85,8 @@ namespace Lombiq.OrchardAppHost
             _hostContainer = HostContainerFactory.CreateHostContainer(this, _settings, _registrations);
 
             var virtualPathProvider = _hostContainer.Resolve<IVirtualPathProvider>();
-            DefaultLog4NetConfigurator.Configure(virtualPathProvider.MapPath(virtualPathProvider.Combine(_settings.AppDataFolderPath, "Logs")), _settings.Log4NetConfigurator);
+            DefaultLog4NetConfigurator
+                .Configure(virtualPathProvider.MapPath(virtualPathProvider.Combine(_settings.AppDataFolderPath, "Logs")), _settings.Log4NetConfigurator);
 
             _hostContainer.Resolve<IOrchardHost>().Initialize();
 
@@ -100,8 +104,14 @@ namespace Lombiq.OrchardAppHost
                             // IFeatureEventHandler implementation.
                             var shellDescriptorManager = scope.Resolve<IShellDescriptorManager>();
                             var shellDescriptor = shellDescriptorManager.GetShellDescriptor();
-                            shellDescriptor.Features = shellDescriptor.Features.Union(defaultShellFeatureState.EnabledFeatures.Select(feature => new ShellFeature { Name = feature }));
-                            shellDescriptorManager.UpdateShellDescriptor(shellDescriptor.SerialNumber, shellDescriptor.Features, shellDescriptor.Parameters);
+
+                            shellDescriptor.Features = shellDescriptor
+                                .Features
+                                .Union(defaultShellFeatureState.EnabledFeatures
+                                .Select(feature => new ShellFeature { Name = feature }));
+
+                            shellDescriptorManager
+                                .UpdateShellDescriptor(shellDescriptor.SerialNumber, shellDescriptor.Features, shellDescriptor.Parameters);
 
                             scope.Resolve<IFeatureManager>().EnableFeatures(defaultShellFeatureState.EnabledFeatures);
                         }), defaultShellFeatureState.ShellName);
@@ -112,8 +122,8 @@ namespace Lombiq.OrchardAppHost
         public async Task Run(Func<IWorkContextScope, Task> process, string shellName)
         {
             var shellContext = _hostContainer.Resolve<IOrchardHost>().GetShellContext(new ShellSettings { Name = shellName });
-            // We need a single HCA, and thus the same HttpContext throughout this scope to carry the work context. Especially
-            // important for async code, see: https://github.com/OrchardCMS/Orchard/issues/4338
+            // We need a single HCA, and thus the same HttpContext throughout this scope to carry the work context. 
+            // Especially important for async code, see: https://github.com/OrchardCMS/Orchard/issues/4338
             // Using InstancePerLifetimeScope() inside the shell ContinerBuilder still yields multiple instantiations.
             var hca = new AppHostHttpContextAccessor();
             using (var scope = shellContext.LifetimeScope.BeginLifetimeScope(
@@ -166,23 +176,30 @@ namespace Lombiq.OrchardAppHost
                 finally
                 {
                     var shellSettingManagerEventHandler = _hostContainer.Resolve<IShellSettingsManagerEventHandler>();
-                    var shellSettings = scope.Resolve<IShellSettingsManager>().LoadSettings().SingleOrDefault(settings => settings.Name == shellName);
+                    var shellSettings = scope
+                        .Resolve<IShellSettingsManager>()
+                        .LoadSettings()
+                        .SingleOrDefault(settings => settings.Name == shellName);
 
                     // This means that setup just run. During setup the shell-tracking services are not registered.
-                    if (previousTenantState == TenantState.Invalid && shellSettings != null && shellSettings.State == TenantState.Running)
+                    if (previousTenantState == TenantState.Invalid && 
+                        shellSettings != null && 
+                        shellSettings.State == TenantState.Running)
                     {
                         shellSettingManagerEventHandler.Saved(shellSettings);
                     }
                     else
                     {
-                        // Due to possibly await-ed calls in the process we keep track of everything that is stored in ContextState<T> normally.
+                        // Due to possibly await-ed calls in the process we keep track of everything that is stored in
+                        // ContextState<T> normally.
                         // This is needed because ContextState<T> looses state on thread switch.
                         // Here we re-apply every change so the necessary services will get to know everything.
                         var shellChangeHandler = scope.Resolve<IShellChangeHandler>();
                         var shellDescriptorManagerEventHandler = _hostContainer.Resolve<IShellDescriptorManagerEventHandler>();
                         foreach (var changedShellDescriptor in shellChangeHandler.GetChangedShellDescriptors())
                         {
-                            shellDescriptorManagerEventHandler.Changed(changedShellDescriptor.ShellDescriptor, changedShellDescriptor.TenantName);
+                            shellDescriptorManagerEventHandler
+                                .Changed(changedShellDescriptor.ShellDescriptor, changedShellDescriptor.TenantName);
                         }
 
                         foreach (var changedShellSettings in shellChangeHandler.GetChangedShellSettings())
@@ -220,7 +237,8 @@ namespace Lombiq.OrchardAppHost
 
 
         /// <summary>
-        /// Trying to load not found assemblies from the Dependencies folder. This is instead of the assemblyBinding config in Orchard's Web.config.
+        /// Trying to load not found assemblies from the Dependencies folder. This is instead of the assemblyBinding 
+        /// config in Orchard's Web.config.
         /// </summary>
         private Assembly ResolveAssembly(object sender, ResolveEventArgs args)
         {

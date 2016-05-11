@@ -9,7 +9,8 @@ using Orchard.Environment.Extensions;
 namespace Lombiq.OrchardAppHost.Services.TransientHost
 {
     /// <summary>
-    /// An <see cref="Orchard.Environment.Descriptor.IShellDescriptorManager"/> implementation that doesn't persist shell descriptors.
+    /// An <see cref="Orchard.Environment.Descriptor.IShellDescriptorManager"/> implementation that doesn't persist 
+    /// shell descriptors.
     /// </summary>
     /// <remarks>
     /// Must be abstract otherwise it would get auto-registered and override the default implementation all the time.

@@ -45,14 +45,18 @@ namespace Lombiq.OrchardAppHost
         }
 
         /// <summary>
-        /// Creates and starts a persistence-less App Host that doesn't have a database connection. A transient host is very light-weight and
-        /// although its state is not persisted (the Orchard shell state; any persistence you do will work of course) it's kept until the
-        /// Host is disposed. That means you can still enabled/disable features for example and the shell state will change as expected.
+        /// Creates and starts a persistence-less App Host that doesn't have a database connection. A transient host is 
+        /// very light-weight and although its state is not persisted (the Orchard shell state; any persistence you do 
+        /// will work of course) it's kept until the Host is disposed. That means you can still enabled/disable features 
+        /// for example and the shell state will change as expected.
         /// </summary>
         /// <param name="settings">Settings for the App Host.</param>
         /// <param name="registrations">Dependency registrations for the App Host.</param>
         /// <param name="enabledStartupFeatures">Names of features to enable already when the shell starts.</param>
-        public static Task<IOrchardAppHost> StartTransientHost(AppHostSettings settings, AppHostRegistrations registrations, IEnumerable<ShellFeature> enabledStartupFeatures)
+        public static Task<IOrchardAppHost> StartTransientHost(
+            AppHostSettings settings, 
+            AppHostRegistrations registrations, 
+            IEnumerable<ShellFeature> enabledStartupFeatures)
         {
             if (registrations == null) registrations = new AppHostRegistrations();
 
@@ -60,7 +64,8 @@ namespace Lombiq.OrchardAppHost
             registrations.HostRegistrations = builder =>
                 {
                     var shellSettingsManager = new TransientShellSettingsManager();
-                    shellSettingsManager.SaveSettings(new ShellSettings { Name = ShellSettings.DefaultName, State = TenantState.Running });
+                    shellSettingsManager
+                        .SaveSettings(new ShellSettings { Name = ShellSettings.DefaultName, State = TenantState.Running });
                     builder.RegisterInstance(shellSettingsManager).As<IShellSettingsManager>().SingleInstance();
 
                     builder.RegisterType<HostTransientStore>().As<IHostTransientStore>().SingleInstance();
@@ -87,7 +92,7 @@ namespace Lombiq.OrchardAppHost
                 builder.RegisterType<TransientStore>().As<ITransientStore>().SingleInstance();
 
                 // These below are only needed if Core extensions are not loaded (i.e. their path not set in AppHostSettings).
-                // Needed too early in ShellContextFactory, since the minimum shell doesn't include any external feautures.
+                // Needed too early in ShellContextFactory, since the minimum shell doesn't include any external features.
                 builder.RegisterType<NullSiteService>().As<ISiteService>().SingleInstance();
                 builder.RegisterType<NullContentDefinitionManager>().As<IContentDefinitionManager>().SingleInstance();
 
