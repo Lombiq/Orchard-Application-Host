@@ -7,12 +7,13 @@ using Orchard.FileSystems.VirtualPath;
 namespace Lombiq.OrchardAppHost.Environment
 {
     /// <summary>
-    /// <see cref="Orchard.Environment.Extensions.Loaders.IExtensionLoader"/> implementation for loading raw themes (i.e. themes
-    /// that don't have their own project but are rather just folders under the default Themes theme project) from arbitrary 
-    /// folders.
+    /// <see cref="Orchard.Environment.Extensions.Loaders.IExtensionLoader"/> implementation for loading raw themes (i.e. 
+    /// themes that don't have their own project but are rather just folders under the default Themes theme project) from
+    /// arbitrary folders.
     /// </summary>
     /// <remarks>
-    /// Only overriding <see cref="RawThemeExtensionLoader"/> to be able to load extensions with the Location not just "~/Themes".
+    /// Only overriding <see cref="RawThemeExtensionLoader"/> to be able to load extensions with the Location not just 
+    /// "~/Themes".
     /// </remarks>
     public class AppHostRawThemeExtensionLoader : RawThemeExtensionLoader
     {

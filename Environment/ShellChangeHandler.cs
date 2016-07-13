@@ -29,13 +29,16 @@ namespace Lombiq.OrchardAppHost.Environment
     // Should be internal so it's not automatically registered in Autofac.
     internal class ShellChangeHandler : IShellChangeHandler, IShellDescriptorManagerEventHandler, IShellSettingsManagerEventHandler
     {
-        private readonly ConcurrentDictionary<string, ShellDescriptor> _changedShellDescriptors = new ConcurrentDictionary<string, ShellDescriptor>();
-        private readonly ConcurrentDictionary<string, ShellSettings> _changedShellSettings = new ConcurrentDictionary<string, ShellSettings>();
+        private readonly ConcurrentDictionary<string, ShellDescriptor> _changedShellDescriptors = 
+            new ConcurrentDictionary<string, ShellDescriptor>();
+        private readonly ConcurrentDictionary<string, ShellSettings> _changedShellSettings = 
+            new ConcurrentDictionary<string, ShellSettings>();
 
 
         public IEnumerable<IChangedShellDescriptor> GetChangedShellDescriptors()
         {
-            return _changedShellDescriptors.Select(kvp => new ChangedShellDescriptor { TenantName = kvp.Key, ShellDescriptor = kvp.Value });
+            return _changedShellDescriptors
+                .Select(kvp => new ChangedShellDescriptor { TenantName = kvp.Key, ShellDescriptor = kvp.Value });
         }
 
         public IEnumerable<ShellSettings> GetChangedShellSettings()

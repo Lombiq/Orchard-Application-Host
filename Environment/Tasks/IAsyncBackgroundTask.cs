@@ -9,7 +9,8 @@ namespace Lombiq.OrchardAppHost.Environment.Tasks
     public interface IAsyncBackgroundTask : IDependency
     {
         /// <summary>
-        /// Called periodically (by default every minute) in the background. Be aware that such calls are NOT wrapped in a transaction.
+        /// Called periodically (by default every minute) in the background. Be aware that such calls are NOT wrapped 
+        /// in a transaction.
         /// </summary>
         Task Sweep();
     }

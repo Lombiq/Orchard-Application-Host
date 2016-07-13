@@ -6,8 +6,8 @@ using Orchard.Environment.Descriptor;
 namespace Lombiq.OrchardAppHost.Environment
 {
     /// <summary>
-    /// When NHibernate session and shell descriptor caches are disabled when configuring the Orchard App Host this module
-    /// applies the configuration to the respective implementations.
+    /// When NHibernate session and shell descriptor caches are disabled when configuring the Orchard App Host this 
+    /// module applies the configuration to the respective implementations.
     /// </summary>
     /// <remarks>Internal so it isn't automatically registered, just when needed.</remarks>
     internal class ConfigurationCacheDisablingModule : Module

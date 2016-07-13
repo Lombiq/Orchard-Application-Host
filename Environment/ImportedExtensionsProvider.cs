@@ -27,8 +27,8 @@ namespace Lombiq.OrchardAppHost.Environment
             IVirtualPathProvider virtualPathProvider)
             : base(dependenciesFolder)
         {
-            // It's not nice to do this in the ctor but this way we spare to implement locking that would be needed with lazy-loading
-            // and this class will be instantiated once anyway.
+            // It's not nice to do this in the ctor but this way we spare to implement locking that would be needed with 
+            // lazy-loading and this class will be instantiated once anyway.
             _extensionsByName = extensions
                 .ToDictionary
                 (

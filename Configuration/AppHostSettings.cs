@@ -47,8 +47,8 @@ namespace Lombiq.OrchardAppHost.Configuration
         public bool DisableConfiguratonCaches { get; set; }
 
         /// <summary>
-        /// If set to true, the monitoring of extension folders (for newly installed or changed extensions) will be disabled.
-        /// Disabling extension monitoring saves memory but you won't be able to add new extensions in runtime.
+        /// If set to true, the monitoring of extension folders (for newly installed or changed extensions) will be 
+        /// disabled. Disabling extension monitoring saves memory but you won't be able to add new extensions in runtime.
         /// </summary>
         public bool DisableExtensionMonitoring { get; set; }
 

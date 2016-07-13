@@ -11,8 +11,9 @@ using Orchard.Logging;
 namespace Lombiq.OrchardAppHost
 {
     /// <summary>
-    /// Provides the default Orchard log4net configuration but not from an XML config file but from code. The point is that so there is no need for
-    /// thinking about config files and everything can be changed just from code. A config file can still be used.
+    /// Provides the default Orchard log4net configuration but not from an XML config file but from code. The point is 
+    /// that so there is no need for thinking about config files and everything can be changed just from code. A config 
+    /// file can still be used.
     /// </summary>
     internal static class DefaultLog4NetConfigurator
     {

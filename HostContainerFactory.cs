@@ -13,6 +13,7 @@ using Orchard.Environment.Extensions.Loaders;
 using Orchard.FileSystems.AppData;
 using Orchard.FileSystems.VirtualPath;
 using Orchard.FileSystems.WebSite;
+using Orchard.Localization.Services;
 using Orchard.Logging;
 
 namespace Lombiq.OrchardAppHost
@@ -27,6 +28,8 @@ namespace Lombiq.OrchardAppHost
             return OrchardStarter.CreateHostContainer(builder =>
             {
                 builder.RegisterType<AppHostEnvironment>().As<IHostEnvironment>().SingleInstance();
+                builder.RegisterType<ApplicationEnvironment>().As<IApplicationEnvironment>().SingleInstance();
+                builder.RegisterType<CultureDateTimeFormatProvider>().As<IDateTimeFormatProvider>().SingleInstance();
 
                 // Needed also for shells, separately.
                 RegisterAppDataFolderRoot(builder, settings.AppDataFolderPath).SingleInstance();

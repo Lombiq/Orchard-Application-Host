@@ -25,10 +25,20 @@ With Orchard Application Host you can create console applications, Windows servi
 
 You can see a demo of the Orchard Application Host on the [recording of the Orchard Community Meeting](https://www.youtube.com/watch?v=_9lf7uZ-Ztk&feature=youtu.be&t=22m55s).
 
-Among others Orchard Application Host powers the reverse proxy of the [Hosting Suite](https://dotnest.com/knowledge-base/topics/lombiq-hosting-suite) too.
+Among others Orchard Application Host powers the reverse proxy of the [Hosting Suite](https://dotnest.com/knowledge-base/topics/lombiq-hosting-suite) and [Hastlayer](https://hastlayer.com/) too.
+
+The project's source is available in two public source repositories, automatically mirrored in both directions with [Git-hg Mirror](https://githgmirror.com):
+
+- [https://bitbucket.org/Lombiq/orchard-application-host](https://bitbucket.org/Lombiq/orchard-application-host) (Mercurial repository)
+- [https://github.com/Lombiq/Orchard-Application-Host](https://github.com/Lombiq/Orchard-Application-Host) (Git repository)
+
+Bug reports, feature requests and comments are warmly welcome, **please do so via GitHub**.
+Feel free to send pull requests too, no matter which source repository you choose for this purpose.
+
+This project is developed by [Lombiq Technologies Ltd](http://lombiq.com/). Commercial-grade support is available through Lombiq.
 
 
-## Usage
+## Using Orchard App Host as source in a solution
 
 - See examples in [Lombiq.OrchardAppHost.Sample](https://github.com/Lombiq/Orchard-Application-Host-Sample) and for a full usage scenario with a non-Orchard solution in the [Orchard Application Host Quick Start](https://bitbucket.org/Lombiq/orchard-application-host-quick-start).
 - Disable SessionConfigurationCache otherwise you'll get "The invoked member is not supported in a dynamic assembly." exceptions that are harmless but prevent the session cache from being used anyway.
@@ -39,26 +49,45 @@ Among others Orchard Application Host powers the reverse proxy of the [Hosting S
 - Imported extensions don't need to declare a Module.txt but still can have features: by default they get a feature with the same name as the assembly's (short) name and also all OrchardFeature attribute usages will be processed and their values registered as features.
 - Note that starting Orchard App Host will currently take over ASP.NET MVC and Web API controller instantiation, see [this Orchard issue](https://github.com/OrchardCMS/Orchard/issues/4748).
 
-### Using Orchard App Host as source in a solution
+### Solution structure
 
 The solution **must** follow this folder structure:
 
+- NuGet.config (see explanation below)
 - Lombiq.OrchardAppHost
 	- Lombiq.OrchardAppHost.csproj
 - Orchard (a full Orchard source, i.e. the lib, src folder under it)
-- Arbitrarily named subfolder for 3rd party modules, e.g. Modules.
+- Arbitrarily named subfolder for 3rd party modules, e.g. Modules. Put your own modules here.
 	- Module1
 		- Module1.csproj
 
 The [Orchard Application Host Quick Start](https://bitbucket.org/Lombiq/orchard-application-host-quick-start) solution shows these conventions.
 
-3rd party modules may reference dlls from the Orchard lib folder. By default these references will break since modules in an Orchard solution are under src/Orchard.Web/Modules, not above the Orchard folder (and thus paths differ). To make a module compatible with both standard Orchard solutions and Orchard App Host solutions add the following elements to the modules's csproj:
+### Configuring NuGet
+
+A custom NuGet.config file is needed in the root of your solution so NuGet packages used by Orchard can be properly loaded. This should configure `repositoryPath` as following:
+
+	<?xml version="1.0" encoding="utf-8"?>
+	<configuration>
+	  <config>
+	    <add key="repositoryPath" value="Orchard\src\packages" />
+	  </config>
+	</configuration>
+
+Also see the example in the [Orchard Application Host Quick Start](https://bitbucket.org/Lombiq/orchard-application-host-quick-start).
+
+### Making assembly references compatible with different solution structures
+
+3rd party modules may reference dlls from the Orchard lib folder or use the same NuGet packages as Orchard. By default these references will break since modules in an Orchard solution are under *src/Orchard.Web/Modules*, not above the Orchard folder (and thus paths differ). To make a module compatible with both standard Orchard solutions and Orchard App Host solutions add the following elements to the modules's csproj:
 	
-	<!-- Orchard App Host (https://orchardapphost.codeplex.com/) compatibility start. Enabling the usage of a lib folder at a different location. -->
+	<!-- Orchard App Host (https://github.com/Lombiq/Orchard-Application-Host) compatibility start. Enabling the usage of a lib folder at a different location. -->
 	<ItemGroup>
 	  <LibReferenceSearchPathFiles Include="..\..\Orchard\lib\**\*.dll">
 	    <InProject>false</InProject>
 	  </LibReferenceSearchPathFiles>
+	  <NuGetReferenceSearchPathFiles Include="..\..\Orchard\src\packages\**\*.dll">
+	    <InProject>false</InProject>
+	  </NuGetReferenceSearchPathFiles>
 	</ItemGroup>
 	<Target Name="BeforeResolveReferences">
 	  <RemoveDuplicates Inputs="@(LibReferenceSearchPathFiles->'%(RootDir)%(Directory)')">
@@ -67,25 +96,21 @@ The [Orchard Application Host Quick Start](https://bitbucket.org/Lombiq/orchard-
 	  <CreateProperty Value="@(LibReferenceSearchPath);$(AssemblySearchPaths)">
 	    <Output TaskParameter="Value" PropertyName="AssemblySearchPaths" />
 	  </CreateProperty>
+	  <RemoveDuplicates Inputs="@(NuGetReferenceSearchPathFiles->'%(RootDir)%(Directory)')">
+	    <Output TaskParameter="Filtered" ItemName="NuGetReferenceSearchPath" />
+	  </RemoveDuplicates>
+	  <CreateProperty Value="@(NuGetReferenceSearchPath);$(AssemblySearchPaths)">
+	    <Output TaskParameter="Value" PropertyName="AssemblySearchPaths" />
+	  </CreateProperty>
 	</Target>
 	<PropertyGroup Condition="Exists('..\..\Orchard\lib')">
 	  <ModulesRoot>..\..\Orchard\src\Orchard.Web\Modules\Orchard.Alias\</ModulesRoot>
 	</PropertyGroup>
-	<!-- Orchard App Host (https://orchardapphost.codeplex.com/) compatibility end. -->
+	<!-- Orchard App Host (https://github.com/Lombiq/Orchard-Application-Host) compatibility end. -->
 
-Also make sure to prefix every project reference that points to one of Orchard's built-in projects with `$(ModulesRoot)`:
+Also make sure to prefix every project reference that points to one of Orchard's built-in projects with `$(ModulesRoot)` (assembly references don't need to be changed):
 
 	<ProjectReference Include="$(ModulesRoot)..\..\..\Orchard\Orchard.Framework.csproj">
 	  <Project>{2D1D92BB-4555-4CBE-8D0E-63563D6CE4C6}</Project>
 	  <Name>Orchard.Framework</Name>
 	</ProjectReference>
-
-The module's source is available in two public source repositories, automatically mirrored in both directions with [Git-hg Mirror](https://githgmirror.com):
-
-- [https://bitbucket.org/Lombiq/orchard-application-host](https://bitbucket.org/Lombiq/orchard-application-host) (Mercurial repository)
-- [https://github.com/Lombiq/Orchard-Application-Host](https://github.com/Lombiq/Orchard-Application-Host) (Git repository)
-
-Bug reports, feature requests and comments are warmly welcome, **please do so via GitHub**.
-Feel free to send pull requests too, no matter which source repository you choose for this purpose.
-
-This project is developed by [Lombiq Technologies Ltd](http://lombiq.com/). Commercial-grade support is available through Lombiq.

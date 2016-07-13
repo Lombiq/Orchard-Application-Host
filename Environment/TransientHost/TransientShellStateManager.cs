@@ -7,7 +7,8 @@ using Orchard.Environment.State.Models;
 namespace Lombiq.OrchardAppHost.Services.TransientHost
 {
     /// <summary>
-    /// An <see cref="Orchard.Environment.State.IShellStateManager"/> implementation that doesn't persist shell feature state.
+    /// An <see cref="Orchard.Environment.State.IShellStateManager"/> implementation that doesn't persist shell feature
+    /// state.
     /// </summary>
     [OrchardFeature("Lombiq.OrchardAppHost.TransientHost")]
     public class TransientShellStateManager : IShellStateManager, ISingletonDependency

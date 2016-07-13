@@ -43,9 +43,12 @@ namespace Lombiq.OrchardAppHost.Environment
                 {
                     _paths = new ExtensionPaths
                     {
-                        ModuleFolderPaths = _hostSettings.ModuleFolderPaths.Select(path => _virtualPathProvider.MapPath(path)),
-                        CoreModuleFolderPaths = _hostSettings.CoreModuleFolderPaths.Select(path => _virtualPathProvider.MapPath(path)),
-                        ThemeFolderPaths = _hostSettings.ThemeFolderPaths.Select(path => _virtualPathProvider.MapPath(path))
+                        ModuleFolderPaths = _hostSettings
+                            .ModuleFolderPaths.Select(path => _virtualPathProvider.MapPath(path)),
+                        CoreModuleFolderPaths = _hostSettings
+                            .CoreModuleFolderPaths.Select(path => _virtualPathProvider.MapPath(path)),
+                        ThemeFolderPaths = _hostSettings
+                            .ThemeFolderPaths.Select(path => _virtualPathProvider.MapPath(path))
                     };
                 }
 
