@@ -176,5 +176,10 @@ namespace Lombiq.OrchardAppHost.Environment.TransientHost
         {
             throw new NotImplementedException();
         }
+
+        public void CompleteImport(XElement element, ImportContentSession importContentSession)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -14,30 +14,9 @@ namespace Lombiq.OrchardAppHost.Environment.TransientHost
     /// </summary>
     [OrchardFeature("Lombiq.OrchardAppHost.TransientHost")]
     [OrchardSuppressDependency("Orchard.Data.SessionLocator")]
-    public class NullSessionLocator : ISessionLocator, ITransactionManager
+    public class NullSessionLocator : ISessionLocator
     {
         public NHibernate.ISession For(Type entityType)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Demand()
-        {
-        }
-
-        public void RequireNew()
-        {
-        }
-
-        public void RequireNew(System.Data.IsolationLevel level)
-        {
-        }
-
-        public void Cancel()
-        {
-        }
-
-        public NHibernate.ISession GetSession()
         {
             throw new NotImplementedException();
         }
