@@ -78,13 +78,16 @@ Also see the example in the [Orchard Application Host Quick Start](https://bitbu
 
 ### Making assembly references compatible with different solution structures
 
-3rd party modules may reference dlls from the Orchard lib folder. By default these references will break since modules in an Orchard solution are under src/Orchard.Web/Modules, not above the Orchard folder (and thus paths differ). To make a module compatible with both standard Orchard solutions and Orchard App Host solutions add the following elements to the modules's csproj:
+3rd party modules may reference dlls from the Orchard lib folder or use the same NuGet packages as Orchard. By default these references will break since modules in an Orchard solution are under *src/Orchard.Web/Modules*, not above the Orchard folder (and thus paths differ). To make a module compatible with both standard Orchard solutions and Orchard App Host solutions add the following elements to the modules's csproj:
 	
 	<!-- Orchard App Host (https://github.com/Lombiq/Orchard-Application-Host) compatibility start. Enabling the usage of a lib folder at a different location. -->
 	<ItemGroup>
 	  <LibReferenceSearchPathFiles Include="..\..\Orchard\lib\**\*.dll">
 	    <InProject>false</InProject>
 	  </LibReferenceSearchPathFiles>
+	  <NuGetReferenceSearchPathFiles Include="..\..\Orchard\src\packages\**\*.dll">
+	    <InProject>false</InProject>
+	  </NuGetReferenceSearchPathFiles>
 	</ItemGroup>
 	<Target Name="BeforeResolveReferences">
 	  <RemoveDuplicates Inputs="@(LibReferenceSearchPathFiles->'%(RootDir)%(Directory)')">
@@ -93,13 +96,19 @@ Also see the example in the [Orchard Application Host Quick Start](https://bitbu
 	  <CreateProperty Value="@(LibReferenceSearchPath);$(AssemblySearchPaths)">
 	    <Output TaskParameter="Value" PropertyName="AssemblySearchPaths" />
 	  </CreateProperty>
+	  <RemoveDuplicates Inputs="@(NuGetReferenceSearchPathFiles->'%(RootDir)%(Directory)')">
+	    <Output TaskParameter="Filtered" ItemName="NuGetReferenceSearchPath" />
+	  </RemoveDuplicates>
+	  <CreateProperty Value="@(NuGetReferenceSearchPath);$(AssemblySearchPaths)">
+	    <Output TaskParameter="Value" PropertyName="AssemblySearchPaths" />
+	  </CreateProperty>
 	</Target>
 	<PropertyGroup Condition="Exists('..\..\Orchard\lib')">
 	  <ModulesRoot>..\..\Orchard\src\Orchard.Web\Modules\Orchard.Alias\</ModulesRoot>
 	</PropertyGroup>
 	<!-- Orchard App Host (https://github.com/Lombiq/Orchard-Application-Host) compatibility end. -->
 
-Also make sure to prefix every project reference that points to one of Orchard's built-in projects with `$(ModulesRoot)`:
+Also make sure to prefix every project reference that points to one of Orchard's built-in projects with `$(ModulesRoot)` (assembly references don't need to be changed):
 
 	<ProjectReference Include="$(ModulesRoot)..\..\..\Orchard\Orchard.Framework.csproj">
 	  <Project>{2D1D92BB-4555-4CBE-8D0E-63563D6CE4C6}</Project>
