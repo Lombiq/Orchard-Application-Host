@@ -4,6 +4,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Iesi.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Lombiq.OrchardAppHost
 {
@@ -22,6 +24,10 @@ namespace Lombiq.OrchardAppHost
                     return typeof(Autofac.ContainerBuilder).Assembly;
                 case "NHibernate":
                     return typeof(NHibernate.ADOException).Assembly;
+                case "Iesi.Collections":
+                    return typeof(ReadOnlySet<>).Assembly;
+                case "Newtonsoft.Json":
+                    return typeof(JsonSerializer).Assembly;
                 default:
                     return null;
             }
