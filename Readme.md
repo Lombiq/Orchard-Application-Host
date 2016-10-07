@@ -114,3 +114,8 @@ Also make sure to prefix every project reference that points to one of Orchard's
 	  <Project>{2D1D92BB-4555-4CBE-8D0E-63563D6CE4C6}</Project>
 	  <Name>Orchard.Framework</Name>
 	</ProjectReference>
+	<ProjectReference Include="$(ModulesRoot)..\..\..\Orchard\Orchard.Framework.csproj">
+      <Project>{2D1D92BB-4555-4CBE-8D0E-63563D6CE4C6}</Project>
+      <Name>Orchard.Framework</Name>
+      <Private>false</Private>
+    </ProjectReference>
