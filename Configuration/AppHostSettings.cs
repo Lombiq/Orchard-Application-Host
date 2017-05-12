@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using log4net.Repository;
+using Orchard.Environment.Configuration;
 
 namespace Lombiq.OrchardAppHost.Configuration
 {
@@ -78,7 +79,7 @@ namespace Lombiq.OrchardAppHost.Configuration
         /// <summary>
         /// The name of the shell in question.
         /// </summary>
-        public string ShellName { get; set; }
+        public string ShellName { get; set; } = ShellSettings.DefaultName;
 
         /// <summary>
         /// IDs of features to enable by default.
