@@ -62,7 +62,7 @@ namespace Lombiq.OrchardAppHost
 
             // Automatically importing OrchardAppHost assemblies.
             if (_settings.ImportedExtensions == null) _settings.ImportedExtensions = Enumerable.Empty<Assembly>();
-            _settings.ImportedExtensions = _settings.ImportedExtensions.Union(new[] { this.GetType().Assembly });
+            _settings.ImportedExtensions = _settings.ImportedExtensions.Union(new[] { GetType().Assembly });
 
             // Automatically enabling OrchardAppHost root feature to register common dependencies.
             if (_settings.DefaultShellFeatureStates == null)
