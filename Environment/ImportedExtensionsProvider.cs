@@ -34,15 +34,15 @@ namespace Lombiq.OrchardAppHost.Environment
                 (
                     assembly => assembly.ShortName(),
                     assembly => new Extension
-                        {
-                            Assembly = assembly,
-                            Features = assembly
+                    {
+                        Assembly = assembly,
+                        Features = assembly
                                 .GetExportedTypes()
                                 .Where(type => type.GetCustomAttribute(typeof(OrchardFeatureAttribute)) != null)
                                 .Select(type => ((OrchardFeatureAttribute)type.GetCustomAttribute(typeof(OrchardFeatureAttribute))).FeatureName)
                                 .Union(new[] { assembly.ShortName() })
                                 .Distinct()
-                        }
+                    }
                 );
 
             _virtualPathProvider = virtualPathProvider;
@@ -53,31 +53,33 @@ namespace Lombiq.OrchardAppHost.Environment
         {
             return _extensionsByName.
                 Select(extensionByName =>
+                {
+                    var extensionDescriptor = new ExtensionDescriptor
                     {
-                        var extensionDescriptor = new ExtensionDescriptor
+                        Location = string.Empty,
+                        Id = extensionByName.Key,
+                        ExtensionType = DefaultExtensionTypes.Module,
+                        Path = extensionByName.Key
+                    };
+
+                    var features = extensionByName.Value.Features.Select(feature =>
+                        new FeatureDescriptor
                         {
-                            Location = string.Empty,
-                            Id = extensionByName.Key,
-                            ExtensionType = DefaultExtensionTypes.Module,
-                            Path = extensionByName.Key
-                        };
+                            Extension = extensionDescriptor,
+                            Id = feature
+                        });
 
-                        var features = extensionByName.Value.Features.Select(feature =>
-                            new FeatureDescriptor
-                            {
-                                Extension = extensionDescriptor,
-                                Id = feature
-                            });
+                    extensionDescriptor.Features = features;
 
-                        extensionDescriptor.Features = features;
-
-                        return extensionDescriptor;
-                    });
+                    return extensionDescriptor;
+                });
         }
 
         public override ExtensionProbeEntry Probe(ExtensionDescriptor descriptor)
         {
-            var path = _virtualPathProvider.Combine(descriptor.Location, descriptor.Id, ".dll");
+            if (!_extensionsByName.ContainsKey(descriptor.Id)) return null;
+
+            var path = _virtualPathProvider.Combine(descriptor.Location, descriptor.Id + ".dll");
 
             return new ExtensionProbeEntry
             {
