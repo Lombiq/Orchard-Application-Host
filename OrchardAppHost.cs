@@ -13,10 +13,12 @@ using Orchard.Environment;
 using Orchard.Environment.Configuration;
 using Orchard.Environment.Descriptor;
 using Orchard.Environment.Descriptor.Models;
+using Orchard.Environment.Extensions;
 using Orchard.Environment.Features;
 using Orchard.Environment.State;
 using Orchard.Events;
 using Orchard.Exceptions;
+using Orchard.FileSystems.AppData;
 using Orchard.FileSystems.Dependencies;
 using Orchard.FileSystems.VirtualPath;
 using Orchard.Logging;
@@ -58,7 +60,7 @@ namespace Lombiq.OrchardAppHost
             AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
             AppDomain.CurrentDomain.AssemblyResolve -= AssemblyRedirectAssemblyResolver.ResolveAssembly;
             AppDomain.CurrentDomain.AssemblyResolve += AssemblyRedirectAssemblyResolver.ResolveAssembly;
-            
+
 
             // Automatically importing OrchardAppHost assemblies.
             if (_settings.ImportedExtensions == null) _settings.ImportedExtensions = Enumerable.Empty<Assembly>();
@@ -88,8 +90,12 @@ namespace Lombiq.OrchardAppHost
             DefaultLog4NetConfigurator
                 .Configure(virtualPathProvider.MapPath(virtualPathProvider.Combine(_settings.AppDataFolderPath, "Logs")), _settings.Log4NetConfigurator);
 
-            _hostContainer.Resolve<IOrchardHost>().Initialize();
+            // ExtensionMonitoringCoordinator needs to be disabled otherwise when the solution is freshly built it would
+            // immediately restart the shell.
+            var extensionMonitoringCoordinator = _hostContainer.Resolve<IExtensionMonitoringCoordinator>() as ExtensionMonitoringCoordinator;
+            if (extensionMonitoringCoordinator != null) extensionMonitoringCoordinator.Disabled = true;
 
+            _hostContainer.Resolve<IOrchardHost>().Initialize();
 
             if (_settings.DefaultShellFeatureStates != null && _settings.DefaultShellFeatureStates.Any())
             {
@@ -182,8 +188,8 @@ namespace Lombiq.OrchardAppHost
                         .SingleOrDefault(settings => settings.Name == shellName);
 
                     // This means that setup just run. During setup the shell-tracking services are not registered.
-                    if (previousTenantState == TenantState.Invalid && 
-                        shellSettings != null && 
+                    if (previousTenantState == TenantState.Invalid &&
+                        shellSettings != null &&
                         shellSettings.State == TenantState.Running)
                     {
                         shellSettingManagerEventHandler.Saved(shellSettings);
@@ -238,7 +244,7 @@ namespace Lombiq.OrchardAppHost
 
         /// <summary>
         /// Trying to load not found assemblies from the Dependencies folder. This is instead of the assemblyBinding 
-        /// config in Orchard's Web.config.
+        /// config in Orchard's Web.config that configures the folder for probing.
         /// </summary>
         private Assembly ResolveAssembly(object sender, ResolveEventArgs args)
         {
@@ -246,23 +252,13 @@ namespace Lombiq.OrchardAppHost
             if (_hostContainer == null) return null;
 
             var assemblyName = args.Name.ToAssemblyShortName();
-            var dependenciesFolder = _hostContainer.Resolve<IDependenciesFolder>();
-            var path = string.Empty;
+            var appDataFolder = _hostContainer.Resolve<IAppDataFolder>();
 
-            var dependency = dependenciesFolder.GetDescriptor(assemblyName);
-            if (dependency != null) path = dependency.VirtualPath;
-            else if (args.RequestingAssembly != null)
-            {
-                dependency = dependenciesFolder.GetDescriptor(args.RequestingAssembly.ShortName());
-                if (dependency != null)
-                {
-                    var reference = dependency.References.SingleOrDefault(r => r.Name == assemblyName);
-                    if (reference != null) path = reference.VirtualPath;
-                }
-            }
+            var assemblyPath = appDataFolder.Combine("Dependencies", assemblyName + ".dll");
 
-            if (!string.IsNullOrEmpty(path)) return Assembly.LoadFile(path);
-            return null;
+            if (!appDataFolder.FileExists(assemblyPath)) return null;
+
+            return Assembly.LoadFile(appDataFolder.MapPath(assemblyPath));
         }
     }
 }
