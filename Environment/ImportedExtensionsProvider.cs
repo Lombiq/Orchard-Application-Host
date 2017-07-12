@@ -77,9 +77,11 @@ namespace Lombiq.OrchardAppHost.Environment
 
         public override ExtensionProbeEntry Probe(ExtensionDescriptor descriptor)
         {
-            if (!_extensionsByName.ContainsKey(descriptor.Id)) return null;
+            Extension extension;
 
-            var path = _virtualPathProvider.Combine(descriptor.Location, descriptor.Id + ".dll");
+            if (!_extensionsByName.TryGetValue(descriptor.Id, out extension)) return null;
+
+            var path = extension.Assembly.Location;
 
             return new ExtensionProbeEntry
             {
