@@ -51,10 +51,7 @@ namespace Lombiq.OrchardAppHost
                         RegisterVolatileProviderForShell<AppHostVirtualPathProvider, IVirtualPathProvider>(shellBuilder);
                         RegisterVolatileProviderForShell<AppHostWebSiteFolder, IWebSiteFolder>(shellBuilder);
 
-                        if (registrations.ShellRegistrations != null)
-                        {
-                            registrations.ShellRegistrations(shellBuilder);
-                        }
+                        registrations.ShellRegistrations?.Invoke(shellBuilder);
                     }
                 };
                 builder.RegisterInstance(shellRegistrations).As<IShellContainerRegistrations>();
@@ -92,10 +89,7 @@ namespace Lombiq.OrchardAppHost
 
                 builder.RegisterInstance(appHost).As<IOrchardAppHost>().ExternallyOwned();
 
-                if (registrations.HostRegistrations != null)
-                {
-                    registrations.HostRegistrations(builder);
-                }
+                registrations.HostRegistrations?.Invoke(builder);
             });
         }
 

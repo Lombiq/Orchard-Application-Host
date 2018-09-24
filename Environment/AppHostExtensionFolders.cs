@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Orchard.Environment.Extensions.Folders;
+using Orchard.Environment.Extensions.Loaders;
 using Orchard.Environment.Extensions.Models;
 
 namespace Lombiq.OrchardAppHost.Environment
@@ -16,12 +17,17 @@ namespace Lombiq.OrchardAppHost.Environment
     {
         private readonly IExtensionPathsProvider _extensionPathsProvider;
         private readonly IExtensionHarvester _extensionHarvester;
+        private readonly IEnumerable<IExtensionLoader> _extensionLoaders;
 
 
-        public AppHostExtensionFolders(IExtensionPathsProvider extensionPathsProvider, IExtensionHarvester extensionHarvester)
+        public AppHostExtensionFolders(
+            IExtensionPathsProvider extensionPathsProvider, 
+            IExtensionHarvester extensionHarvester,
+            IEnumerable<IExtensionLoader> extensionLoaders)
         {
             _extensionPathsProvider = extensionPathsProvider;
             _extensionHarvester = extensionHarvester;
+            _extensionLoaders = extensionLoaders;
         }
 
 
@@ -29,11 +35,20 @@ namespace Lombiq.OrchardAppHost.Environment
         {
             var extensionPaths = _extensionPathsProvider.GetExtensionPaths();
 
-            return 
+            // Removing imported extensions. If an imported extension also has a Module.txt then this will prevent 
+            // double-loading it.
+            var importedExtensions = _extensionLoaders
+                .OfType<ImportedExtensionsProvider>()
+                .Single()
+                .AvailableExtensions()
+                .ToDictionary(extension => extension.Id);
+
+            return
                 _extensionHarvester
                 .HarvestExtensions(extensionPaths.ModuleFolderPaths, DefaultExtensionTypes.Module, "Module.txt", false)
                 .Union(_extensionHarvester.HarvestExtensions(extensionPaths.CoreModuleFolderPaths, DefaultExtensionTypes.Module, "Module.txt", false))
-                .Union(_extensionHarvester.HarvestExtensions(extensionPaths.ThemeFolderPaths, DefaultExtensionTypes.Theme, "Theme.txt", false));
+                .Union(_extensionHarvester.HarvestExtensions(extensionPaths.ThemeFolderPaths, DefaultExtensionTypes.Theme, "Theme.txt", false))
+                .Where(extension => !importedExtensions.ContainsKey(extension.Id));
         }
     }
 }
