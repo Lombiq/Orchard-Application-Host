@@ -76,6 +76,11 @@ namespace Lombiq.OrchardAppHost
             return appHost.Run(scope => process(scope.Resolve<TService1>(), scope.Resolve<TService2>(), scope.Resolve<TService3>(), scope.Resolve<TService4>(), scope.Resolve<TService5>(), scope.Resolve<TService6>(), scope.Resolve<TService7>(), scope.Resolve<TService8>()), shellName, wrapInTransaction);
         }
 
+        public static Task Run<TService1, TService2, TService3, TService4, TService5, TService6, TService7, TService8, TService9>(this IOrchardAppHost appHost, Func<TService1, TService2, TService3, TService4, TService5, TService6, TService7, TService8, TService9, Task> process, string shellName = ShellSettings.DefaultName, bool wrapInTransaction = true)
+        {
+            return appHost.Run(scope => process(scope.Resolve<TService1>(), scope.Resolve<TService2>(), scope.Resolve<TService3>(), scope.Resolve<TService4>(), scope.Resolve<TService5>(), scope.Resolve<TService6>(), scope.Resolve<TService7>(), scope.Resolve<TService8>(), scope.Resolve<TService9>()), shellName, wrapInTransaction);
+        }
+
         /// <summary>
         /// Runs a process inside the Orchard App Host that retrieves a value. The method is thread-safe.
         /// </summary>
