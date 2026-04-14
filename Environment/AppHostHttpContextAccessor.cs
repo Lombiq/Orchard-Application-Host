@@ -1,7 +1,7 @@
-﻿using System.Collections;
+﻿using Orchard.Mvc;
+using System.Collections;
 using System.Collections.Generic;
 using System.Web;
-using Orchard.Mvc;
 
 namespace Lombiq.OrchardAppHost.Environment
 {

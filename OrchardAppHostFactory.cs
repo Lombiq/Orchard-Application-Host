@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Autofac;
+﻿using Autofac;
 using Lombiq.OrchardAppHost.Configuration;
 using Lombiq.OrchardAppHost.Services.TransientHost;
 using Orchard.ContentManagement.MetaData;
@@ -10,6 +7,9 @@ using Orchard.Environment.Descriptor;
 using Orchard.Environment.Descriptor.Models;
 using Orchard.Environment.State;
 using Orchard.Settings;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Lombiq.OrchardAppHost
 {

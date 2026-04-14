@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Orchard.Environment.Extensions.Folders;
+﻿using Orchard.Environment.Extensions.Folders;
 using Orchard.Environment.Extensions.Loaders;
 using Orchard.Environment.Extensions.Models;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Lombiq.OrchardAppHost.Environment
 {

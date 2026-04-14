@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using Orchard.Environment.Extensions;
+﻿using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Folders;
 using Orchard.Environment.Extensions.Loaders;
 using Orchard.Environment.Extensions.Models;
 using Orchard.FileSystems.Dependencies;
 using Orchard.FileSystems.VirtualPath;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace Lombiq.OrchardAppHost.Environment
 {

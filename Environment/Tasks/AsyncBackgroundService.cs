@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using Orchard.Environment.Configuration;
+using Orchard.Tasks;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Orchard.Environment.Configuration;
-using Orchard.Tasks;
 
 namespace Lombiq.OrchardAppHost.Environment.Tasks
 {

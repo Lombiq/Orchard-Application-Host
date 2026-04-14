@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Web.Mvc;
-using System.Web.Routing;
-using Autofac;
+﻿using Autofac;
 using Autofac.Builder;
 using Lombiq.OrchardAppHost.Configuration;
 using Lombiq.OrchardAppHost.Environment;
@@ -15,6 +11,10 @@ using Orchard.FileSystems.VirtualPath;
 using Orchard.FileSystems.WebSite;
 using Orchard.Localization.Services;
 using Orchard.Logging;
+using System;
+using System.Linq;
+using System.Web.Mvc;
+using System.Web.Routing;
 
 namespace Lombiq.OrchardAppHost
 {

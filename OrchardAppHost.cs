@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using System.Web;
-using Autofac;
-using Autofac.Core;
+﻿using Autofac;
 using Lombiq.OrchardAppHost.Configuration;
 using Lombiq.OrchardAppHost.Environment;
 using Orchard;
@@ -19,10 +12,13 @@ using Orchard.Environment.State;
 using Orchard.Events;
 using Orchard.Exceptions;
 using Orchard.FileSystems.AppData;
-using Orchard.FileSystems.Dependencies;
 using Orchard.FileSystems.VirtualPath;
 using Orchard.Logging;
 using Orchard.Mvc;
+using System;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Lombiq.OrchardAppHost
 {

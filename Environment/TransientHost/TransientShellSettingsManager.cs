@@ -1,7 +1,7 @@
-﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
-using Orchard.Environment.Configuration;
+﻿using Orchard.Environment.Configuration;
 using Orchard.Environment.Extensions;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 namespace Lombiq.OrchardAppHost.Services.TransientHost
 {

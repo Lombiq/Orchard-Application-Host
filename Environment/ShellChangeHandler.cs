@@ -1,9 +1,9 @@
-﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using Orchard.Environment.Configuration;
+﻿using Orchard.Environment.Configuration;
 using Orchard.Environment.Descriptor;
 using Orchard.Environment.Descriptor.Models;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Lombiq.OrchardAppHost.Environment
 {

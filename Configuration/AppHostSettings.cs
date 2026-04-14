@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using log4net.Repository;
+using Orchard.Environment.Configuration;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using log4net.Repository;
-using Orchard.Environment.Configuration;
 
 namespace Lombiq.OrchardAppHost.Configuration
 {

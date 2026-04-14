@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Orchard.Data;
+﻿using Orchard.Data;
 using Orchard.Environment.Extensions;
+using System;
 
 namespace Lombiq.OrchardAppHost.Environment.TransientHost
 {
