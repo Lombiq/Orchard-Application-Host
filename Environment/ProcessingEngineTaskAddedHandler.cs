@@ -62,6 +62,10 @@ namespace Lombiq.OrchardAppHost.Environment
             throw new NotImplementedException();
         }
 
+        public void Initialize()
+        {
+            throw new NotImplementedException();
+        }
 
         public class ProcessingEngineTask : IProcessingEngineTask
         {

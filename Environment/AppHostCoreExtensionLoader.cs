@@ -22,7 +22,7 @@ namespace Lombiq.OrchardAppHost.Environment
             IDependenciesFolder dependenciesFolder,
             IAssemblyLoader assemblyLoader,
             IExtensionPathsProvider extensionPathsProvider)
-            : base(dependenciesFolder, assemblyLoader)
+            : base(assemblyLoader, dependenciesFolder)
         {
             _extensionPathsProvider = extensionPathsProvider;
         }

@@ -178,5 +178,10 @@ namespace Lombiq.OrchardAppHost.Environment.TransientHost
         {
             throw new NotImplementedException();
         }
+
+        public void DiscardDraft(ContentItem contentItem)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

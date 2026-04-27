@@ -108,7 +108,6 @@
     <Compile Include="Environment\ShellChangeHandler.cs" />
     <Compile Include="Environment\Tasks\IAsyncBackgroundTask.cs" />
     <Compile Include="Environment\TransientHost\NullContentManager.cs" />
-    <Compile Include="Environment\TransientHost\NullSessionLocator.cs" />
     <Compile Include="Environment\TransientHost\NullTransactionManager.cs" />
     <Compile Include="Extensions\AssemblyExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
