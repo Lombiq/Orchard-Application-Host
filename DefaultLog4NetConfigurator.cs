@@ -1,5 +1,4 @@
-﻿using System.IO;
-using log4net;
+﻿using log4net;
 using log4net.Appender;
 using log4net.Core;
 using log4net.Filter;
@@ -7,6 +6,7 @@ using log4net.Layout;
 using log4net.Repository.Hierarchy;
 using Lombiq.OrchardAppHost.Configuration;
 using Orchard.Logging;
+using System.IO;
 
 namespace Lombiq.OrchardAppHost
 {

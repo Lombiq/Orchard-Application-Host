@@ -1,8 +1,8 @@
-﻿using System.Linq;
-using Orchard;
+﻿using Orchard;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.State;
 using Orchard.Environment.State.Models;
+using System.Linq;
 
 namespace Lombiq.OrchardAppHost.Services.TransientHost
 {

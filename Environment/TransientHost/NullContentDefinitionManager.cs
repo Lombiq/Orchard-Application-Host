@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Orchard.ContentManagement.MetaData;
+﻿using Orchard.ContentManagement.MetaData;
 using Orchard.ContentManagement.MetaData.Models;
 using Orchard.Environment.Extensions;
+using System;
+using System.Collections.Generic;
 
 namespace Lombiq.OrchardAppHost.Services.TransientHost
 {

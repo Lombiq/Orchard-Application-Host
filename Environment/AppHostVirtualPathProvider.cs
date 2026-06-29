@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Orchard.Environment.Extensions;
+using Orchard.FileSystems.VirtualPath;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Orchard.Environment.Extensions;
-using Orchard.FileSystems.VirtualPath;
 
 namespace Lombiq.OrchardAppHost.Environment
 {

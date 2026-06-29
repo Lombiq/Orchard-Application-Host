@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using Orchard.Environment.Extensions;
+﻿using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Folders;
 using Orchard.Environment.Extensions.Loaders;
 using Orchard.Environment.Extensions.Models;
 using Orchard.FileSystems.Dependencies;
 using Orchard.FileSystems.VirtualPath;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace Lombiq.OrchardAppHost.Environment
 {
@@ -17,6 +17,7 @@ namespace Lombiq.OrchardAppHost.Environment
     {
         private readonly Dictionary<string, Extension> _extensionsByName;
         private readonly IVirtualPathProvider _virtualPathProvider;
+        private readonly IDependenciesFolder _dependenciesFolder;
 
         public override int Order { get { return 10; } }
 
@@ -27,6 +28,8 @@ namespace Lombiq.OrchardAppHost.Environment
             IVirtualPathProvider virtualPathProvider)
             : base(dependenciesFolder)
         {
+            _dependenciesFolder = dependenciesFolder;
+
             // It's not nice to do this in the ctor but this way we spare to implement locking that would be needed with 
             // lazy-loading and this class will be instantiated once anyway.
             _extensionsByName = extensions
@@ -106,6 +109,16 @@ namespace Lombiq.OrchardAppHost.Environment
             };
         }
 
+        public override bool LoaderIsSuitable(ExtensionDescriptor descriptor)
+        {
+            var dependency = _dependenciesFolder.GetDescriptor(descriptor.Id);
+            if (dependency != null && dependency.LoaderName == this.Name)
+            {
+                return true;
+            }
+
+            return false;
+        }
 
         private class Extension
         {

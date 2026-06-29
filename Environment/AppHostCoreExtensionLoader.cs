@@ -1,8 +1,8 @@
-﻿using System.Linq;
-using Orchard.Environment;
+﻿using Orchard.Environment;
 using Orchard.Environment.Extensions.Loaders;
 using Orchard.Environment.Extensions.Models;
 using Orchard.FileSystems.Dependencies;
+using System.Linq;
 
 namespace Lombiq.OrchardAppHost.Environment
 {
@@ -22,7 +22,7 @@ namespace Lombiq.OrchardAppHost.Environment
             IDependenciesFolder dependenciesFolder,
             IAssemblyLoader assemblyLoader,
             IExtensionPathsProvider extensionPathsProvider)
-            : base(dependenciesFolder, assemblyLoader)
+            : base(assemblyLoader, dependenciesFolder)
         {
             _extensionPathsProvider = extensionPathsProvider;
         }

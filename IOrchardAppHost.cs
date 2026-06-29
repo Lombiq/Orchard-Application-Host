@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Orchard;
+using System;
 using System.Threading.Tasks;
-using Orchard;
 
 namespace Lombiq.OrchardAppHost
 {

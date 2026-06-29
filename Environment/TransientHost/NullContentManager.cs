@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using Orchard.ContentManagement;
+﻿using Orchard.ContentManagement;
 using Orchard.ContentManagement.MetaData.Models;
 using Orchard.Environment.Extensions;
 using Orchard.Indexing;
+using System;
+using System.Collections.Generic;
+using System.Xml.Linq;
 
 namespace Lombiq.OrchardAppHost.Environment.TransientHost
 {
@@ -178,6 +175,11 @@ namespace Lombiq.OrchardAppHost.Environment.TransientHost
         }
 
         public void CompleteImport(XElement element, ImportContentSession importContentSession)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DiscardDraft(ContentItem contentItem)
         {
             throw new NotImplementedException();
         }

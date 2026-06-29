@@ -1,7 +1,7 @@
-﻿using System.IO;
-using Orchard.Environment.Extensions;
+﻿using Orchard.Environment.Extensions;
 using Orchard.FileSystems.VirtualPath;
 using Orchard.FileSystems.WebSite;
+using System.IO;
 
 namespace Lombiq.OrchardAppHost.Environment
 {
